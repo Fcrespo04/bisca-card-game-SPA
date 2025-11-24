@@ -1,0 +1,5 @@
+.kube
+justfile_teachers
+deployment_teachers
+node_modules
+.env
