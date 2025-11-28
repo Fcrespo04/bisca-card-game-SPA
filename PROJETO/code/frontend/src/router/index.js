@@ -2,7 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 
 import AboutPage from '@/pages/about/AboutPage.vue'
 import HomePage from '@/pages/home/HomePage.vue'
-import SingleplayerGamePage from '@/pages/game/SingleplayerGamePage.vue'
+import SingleplayerGamePage from '@/pages/game/SinglePlayerGamePage.vue'
 import LoginPage from '@/pages/login/LoginPage.vue'
 import ProfilePage from '@/pages/profile/ProfilePage.vue'
 import ThemesListPage from '@/pages/themes/ThemesListPage.vue'
@@ -10,6 +10,7 @@ import ThemeEditorPage from '@/pages/themes/ThemeEditorPage.vue'
 import { useAuthStore } from '@/stores/auth'
 import MultiplayerLobbyPage from '@/pages/game/MultiplayerLobbyPage.vue'
 import MultiplayerGamePage from '@/pages/game/MultiplayerGamePage.vue'
+import RegisterPage from '@/pages/register/RegisterPage.vue'
 import { toast } from 'vue-sonner'
 
 const router = createRouter({
@@ -51,6 +52,11 @@ const router = createRouter({
       path: '/login',
       name: 'login',
       component: LoginPage,
+    },
+    {
+      path: '/register',
+      name: 'register',
+      component: RegisterPage,
     },
     {
       path: '/profile',

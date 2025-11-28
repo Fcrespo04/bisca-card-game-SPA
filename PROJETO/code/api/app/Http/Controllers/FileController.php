@@ -6,18 +6,23 @@ use Illuminate\Http\Request;
 
 class FileController extends Controller
 {
-    public function uploadUserPhoto(Request $request)
+   public function uploadUserPhoto(Request $request)
     {
         $request->validate([
-            'photo' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'photo_avatar_filename' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
-        $file = $request->file('photo');
-        $path = $file->store('photos', 'public');
+        if (!$request->hasFile('photo_avatar_filename')) {
+            return response()->json(['message' => 'No file uploaded'], 400);
+        }
+
+        $file = $request->file('photo_avatar_filename');
+        
+        $path = $file->store('photos_avatars', 'public');
 
         return response()->json([
-            'photo_url' => '/storage/' . $path,
-        ], 200);
+            'photo_avatar_filename' => basename($path), 
+        ], 201);
     }
 
 

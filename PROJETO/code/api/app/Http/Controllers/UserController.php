@@ -48,20 +48,60 @@ class UserController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(User $user)
+    public function destroy(Request $request, User $user)
     {
-        //
+        $authenticatedUser = $request->user();
+
+        // Admins cannot be deleted
+        if ($authenticatedUser->id === $user->id && $authenticatedUser->type === 'A') {
+            return response()->json(['message' => 'Administrators cannot delete their own account.'], 403);
+        }
+
+        // Password Confirmation (If deleting own account)
+        if ($authenticatedUser->id === $user->id) {
+            $request->validate([
+                'password' => 'required|string'
+            ]);
+
+            if (!\Illuminate\Support\Facades\Hash::check($request->password, $user->password)) {
+                return response()->json(['message' => 'Invalid password.'], 422);
+            }
+        }
+
+        // Forfeit Coins 
+        $user->coins_balance = 0;
+        $user->save();
+
+        // Soft and Force Delete 
+        // check if the user has any game or transaction history
+        $hasHistory = $user->transactions()->exists() 
+                   || $user->gamesAsPlayer1()->exists() 
+                   || $user->gamesAsPlayer2()->exists();
+
+        if ($hasHistory) {
+            // Soft Delete: Sets 'deleted_at' timestamp
+            $user->delete();
+            return response()->json(['message' => 'Account deactivated (soft delete).']);
+        } else {
+            // Force Delete: Removes row from DB completely
+            if ($user->photo_avatar_filename) {
+                Storage::disk('public')->delete('photos/' . $user->photo_avatar_filename);
+            }
+            
+            $user->forceDelete();
+            return response()->json(['message' => 'Account permanently deleted.']);
+        }
     }
 
 public function patchPhotoURL(Request $request, User $user)
 {
-    $data = $request->validate(['photo_url' => 'required|string']);
-    if ($user->photo_url) {
-        if (Storage::disk('public')->exists('photos/' . $user->photo_url)) {
-            Storage::disk('public')->delete('photos/' . $user->photo_url);
+    $data = $request->validate(['photo_avatar_filename' => 'required|string']);
+    if ($user->photo_avatar_filename) {
+        if (Storage::disk('public')->exists('photos/' . $user->photo_avatar_filename)) {
+            Storage::disk('public')->delete('photos/' . $user->photo_avatar_filename);
         }
     }
-    $user->photo_url = basename($data['photo_url']);
+    $user->photo_avatar_filename = basename($data['photo_avatar_filename']);
     $user->save();
     return new UserResource($user);
 }

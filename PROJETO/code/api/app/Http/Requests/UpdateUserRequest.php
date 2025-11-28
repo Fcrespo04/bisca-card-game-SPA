@@ -15,14 +15,23 @@ class UpdateUserRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => ['required', 'string', 'max:255'],
+            'name' => ['sometimes', 'string', 'max:255'],
+            
             'email' => [
                 'sometimes',
-                'string',
                 'email',
                 'max:255',
-                Rule::unique('users')->ignore($this->id)
-            ]
+                Rule::unique('users')->ignore($this->user), 
+            ],
+
+            'nickname' => [
+                'sometimes',
+                'string',
+                'max:20', 
+                Rule::unique('users')->ignore($this->user),
+            ],
+
+            'password' => ['sometimes', 'string', 'min:3', 'confirmed'],
         ];
     }
 }

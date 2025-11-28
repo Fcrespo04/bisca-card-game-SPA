@@ -36,9 +36,9 @@
 
                 <div class="text-center text-sm">
                     <span class="text-gray-600">Don't have an account? </span>
-                    <a href="#" class="font-medium text-blue-600 hover:text-blue-500">
+                    <RouterLink to="/register" class="font-medium text-blue-600 hover:text-blue-500">
                         Sign up
-                    </a>
+                    </RouterLink>
                 </div>
             </form>
         </div>
@@ -51,15 +51,15 @@ import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 
 import { useAuthStore } from '@/stores/auth'
-import { useRouter } from 'vue-router'
+import { useRouter, RouterLink } from 'vue-router'
 import { toast } from 'vue-sonner'
 
 const authStore = useAuthStore()
 const router = useRouter()
 
 const formData = ref({
-    email: 'test@example.com',
-    password: 'password'
+    email: '',
+    password: ''
 })
 
 

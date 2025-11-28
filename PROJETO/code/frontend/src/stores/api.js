@@ -20,6 +20,13 @@ export const useAPIStore = defineStore('api', () => {
     delete axios.defaults.headers.common['Authorization']
   }
 
+  const postRegister = async (credentials) => {
+    const response = await axios.post(`${API_BASE_URL}/register`, credentials)
+    token.value = response.data.token
+    axios.defaults.headers.common['Authorization'] = `Bearer ${token.value}`
+    return response // Return so auth store can use the user data
+  }
+
   // Users
   const getAuthUser = () => {
     return axios.get(`${API_BASE_URL}/users/me`)
@@ -29,8 +36,16 @@ export const useAPIStore = defineStore('api', () => {
     return axios.put(`${API_BASE_URL}/users/${user.id}`, user)
   }
 
-  const patchUserPhoto = (id, photo_url) => {
-    return axios.patch(`${API_BASE_URL}/users/${id}/photo-url`, { photo_url })
+  const patchUserPhoto = (id, filename) => {
+    return axios.patch(`${API_BASE_URL}/users/${id}/photo-url`, { 
+        photo_avatar_filename: filename 
+    })
+  }
+
+  const deleteUser = (user, password) => {
+    return axios.delete(`${API_BASE_URL}/users/${user.id}`, {
+      data: { password: password }
+    })
   }
 
   // GAMES
@@ -71,7 +86,7 @@ export const useAPIStore = defineStore('api', () => {
 
   const uploadProfilePhoto = async (file) => {
     const formData = new FormData()
-    formData.append('photo', file)
+    formData.append('photo_avatar_filename', file)
 
     const uploadPromise = axios.post(`${API_BASE_URL}/files/userphoto`, formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
@@ -105,14 +120,14 @@ export const useAPIStore = defineStore('api', () => {
     return uploadPromise
   }
 
-
-
   return {
     postLogin,
     postLogout,
+    postRegister,
     getAuthUser,
     putUser,
     patchUserPhoto,
+    deleteUser,
     postGame,
     getGames,
     getBoardThemes,

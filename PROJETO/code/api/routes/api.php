@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 Route::post('/login', [AuthController::class, 'login']);
+Route::post('/register', [AuthController::class, 'register']);
 
 Route::apiResource('games', GameController::class)->only(['index', 'show', 'store']);
 
@@ -37,7 +38,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
 Route::get('/metadata', function (Request $request) {
     return [
-        'name' => 'DAD 2025/26 Worksheet API',
+        'name' => 'DAD 2025/26 PROJECT API',
         'version' => '0.0.1',
     ];
 });

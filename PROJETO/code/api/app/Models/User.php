@@ -2,17 +2,17 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes; 
 
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasApiTokens, HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable, SoftDeletes; 
 
     /**
      * The attributes that are mass assignable.
@@ -23,7 +23,11 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'photo_url',
+        'nickname',              // <-- New Bisca field
+        'type',                  // <-- Replaces 'role' ('A' for Admin, 'P' for Player)
+        'blocked',               // <-- To block users
+        'photo_avatar_filename', // <-- Replaces 'photo_url'
+        'coins_balance',         // <-- Economy field
     ];
 
     /**
@@ -46,27 +50,60 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'blocked' => 'boolean',
         ];
     }
 
+    // --- Games Relationships ---
+
     public function gamesAsPlayer1(): HasMany
     {
-        return $this->hasMany(Game::class, 'player1_id');
+        return $this->hasMany(Game::class, 'player1_user_id'); // Updated FK
     }
 
     public function gamesAsPlayer2(): HasMany
     {
-        return $this->hasMany(Game::class, 'player2_id');
+        return $this->hasMany(Game::class, 'player2_user_id'); // Updated FK
     }
 
     public function gamesWon(): HasMany
     {
-        return $this->hasMany(Game::class, 'winner_id');
+        return $this->hasMany(Game::class, 'winner_user_id'); // Updated FK
     }
 
-    public function gamesQuery(): \Illuminate\Database\Eloquent\Builder
+    // --- Matches Relationships ---
+
+    public function matchesAsPlayer1(): HasMany
     {
-        return Game::where('player1_id', $this->id)
-            ->orWhere('player2_id', $this->id);
+        return $this->hasMany(GameMatch::class, 'player1_user_id');
+    }
+
+    public function matchesAsPlayer2(): HasMany
+    {
+        return $this->hasMany(GameMatch::class, 'player2_user_id');
+    }
+
+    public function matchesWon(): HasMany
+    {
+        return $this->hasMany(GameMatch::class, 'winner_user_id');
+    }
+
+    // --- Coin Transactions and Purchases Relationships ---
+
+    public function transactions(): HasMany
+    {
+        return $this->hasMany(CoinTransaction::class, 'user_id');
+    }
+
+    public function purchases(): HasMany
+    {
+        return $this->hasMany(CoinPurchase::class, 'user_id');
+    }
+
+    // Helper for "My Games"
+    public function gamesQuery()
+    {
+        return Game::where('player1_user_id', $this->id)
+            ->orWhere('player2_user_id', $this->id);
     }
 }
