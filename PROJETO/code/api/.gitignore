@@ -1,3 +1,4 @@
+!storage/app/public/card_decks
 *.log
 .DS_Store
 .env
