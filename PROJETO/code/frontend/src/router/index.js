@@ -5,13 +5,13 @@ import HomePage from '@/pages/home/HomePage.vue'
 import SingleplayerGamePage from '@/pages/game/SinglePlayerGamePage.vue'
 import LoginPage from '@/pages/login/LoginPage.vue'
 import ProfilePage from '@/pages/profile/ProfilePage.vue'
-import ThemesListPage from '@/pages/themes/ThemesListPage.vue'
-import ThemeEditorPage from '@/pages/themes/ThemeEditorPage.vue'
 import { useAuthStore } from '@/stores/auth'
 import MultiplayerLobbyPage from '@/pages/game/MultiplayerLobbyPage.vue'
 import MultiplayerGamePage from '@/pages/game/MultiplayerGamePage.vue'
 import RegisterPage from '@/pages/register/RegisterPage.vue'
 import ShopPage from '@/pages/transactions/ShopPage.vue'
+import CardPacksShop from '@/pages/transactions/CardPackShop.vue'
+import MyCardCollection from '@/pages/profile/MyCardCollection.vue'
 import { toast } from 'vue-sonner'
 
 const router = createRouter({
@@ -72,21 +72,15 @@ const router = createRouter({
       meta: { requiresAuth: true },
     },
     {
-      path: '/themes',
-      name: 'themes',
-      component: ThemesListPage,
+      path: '/card-packs',
+      name: 'card-packs-shop',
+      component: CardPacksShop,
       meta: { requiresAuth: true },
     },
     {
-      path: '/themes/create',
-      name: 'themes-create',
-      component: ThemeEditorPage,
-      meta: { requiresAuth: true },
-    },
-    {
-      path: '/themes/edit/:id',
-      name: 'themes-edit',
-      component: ThemeEditorPage,
+      path: '/my-cards',
+      name: 'my-card-collection',
+      component: MyCardCollection,
       meta: { requiresAuth: true },
     },
   ],

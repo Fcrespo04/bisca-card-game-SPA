@@ -66,6 +66,7 @@ class DatabaseSeeder extends Seeder
         $this->call(TransactionTypesSeeder::class);
         $this->call(UsersSeeder::class);
         $this->call(InitialTransactionsSeeder::class);
+        $this->call(CardDecksSeeder::class); // <-- New Seeder Call to seed Card Decks
         $this->call(GamesSeeder::class);
         $this->call(GamesTransactionsSeeder::class);
 

@@ -97,6 +97,18 @@ export const useAuthStore = defineStore('auth', () => {
     return response.data.data // Laravel Resource wraps in 'data'
   }
 
+  const buyDeck = async (deckId) => {
+    const response = await apiStore.purchaseDeck(deckId)
+    await getUser() // Refresh coin balance
+    return response.data
+  }
+
+  const equipDeck = async (deckId) => {
+    const response = await apiStore.equipDeck(deckId)
+    await getUser() // Refresh current_card_deck_id
+    return response.data
+  }
+
   return {
     currentUser,
     currentUserID,
@@ -110,5 +122,7 @@ export const useAuthStore = defineStore('auth', () => {
     updateUserPhoto,
     buyCoins,
     fetchTransactions,
+    buyDeck,
+    equipDeck,
   }
 })

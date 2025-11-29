@@ -100,6 +100,18 @@ class User extends Authenticatable
         return $this->hasMany(CoinPurchase::class, 'user_id');
     }
 
+    // --- Card Decks Relationships ---
+    
+    public function cardDecks()
+    {
+        return $this->belongsToMany(CardDeck::class, 'user_card_deck');
+    }
+
+    public function currentDeck()
+    {
+        return $this->belongsTo(CardDeck::class, 'current_card_deck_id');
+    }
+
     // Helper for "My Games"
     public function gamesQuery()
     {

@@ -39,6 +39,10 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('/transactions', [TransactionController::class, 'index']);
     Route::post('/transactions', [TransactionController::class, 'store']);
+
+    Route::get('/card-decks', [\App\Http\Controllers\CardDeckController::class, 'index']);
+    Route::post('/card-decks/{deck}/purchase', [\App\Http\Controllers\CardDeckController::class, 'purchase']);
+    Route::post('/card-decks/{deck}/equip', [\App\Http\Controllers\CardDeckController::class, 'equip']);
 });
 
 Route::get('/metadata', function (Request $request) {

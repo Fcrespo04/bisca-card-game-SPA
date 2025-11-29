@@ -91,6 +91,17 @@ class AuthController extends Controller
                 ]);
             }
 
+            $defaultDeck = \App\Models\CardDeck::where('slug', 'default')->first();
+            
+            if ($defaultDeck) {
+                // Add to collection
+                $user->cardDecks()->attach($defaultDeck->id);
+                
+                // Equip it immediately
+                $user->current_card_deck_id = $defaultDeck->id;
+                $user->save();
+            }
+
             // 3. Auto-login (Generate Token)
             $token = $user->createToken('auth-token')->plainTextToken;
 
