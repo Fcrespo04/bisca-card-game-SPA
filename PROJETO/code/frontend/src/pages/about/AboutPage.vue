@@ -6,21 +6,25 @@ import { ref, onMounted, inject } from 'vue'
 const socket = inject('socket')
 const api = ref({})
 const received = ref('')
-const message = ref('Hello from VueJS')
+const message = ref('Hello from Bisca Client')
 
 socket.on('echo', (msg) => {
   received.value = msg
 })
 
-
 onMounted(async () => {
-  const response = await fetch('http://localhost:8000/api/metadata', {
-    method: 'GET',
-    headers: {
-      'Accept': 'application/json'
-    }
-  })
-  api.value = await response.json()
+  try {
+    const response = await fetch('http://localhost:8000/api/metadata', {
+      method: 'GET',
+      headers: {
+        'Accept': 'application/json'
+      }
+    })
+    api.value = await response.json()
+  } catch (error) {
+    console.error("API Offline")
+    api.value = { version: "Offline", name: "API Unreachable" }
+  }
 })
 </script>
 
@@ -30,101 +34,61 @@ onMounted(async () => {
 
       <div class="text-center space-y-2">
         <h1 class="text-4xl font-bold text-slate-900 tracking-tight">
-          Distributed Application Development
+          Bisca Game Platform
         </h1>
-        <p class="text-lg text-slate-600">
-          Worksheet 2 - About Page
+        <p class="text-lg text-slate-600 font-medium">
+          DAD Project 25/26 - Group 6
         </p>
       </div>
-
 
       <div class="bg-white rounded-lg shadow-sm border border-slate-200 p-6">
-        <p class="text-slate-700 leading-relaxed">
-          This is the about page for Worksheet 2, where we will be exploring the basics of
-          <span class="font-semibold text-emerald-600">VueJS</span>,
-          <span class="font-semibold text-red-600">Laravel</span>, and
-          <span class="font-semibold text-blue-600">SocketIO</span>.
+        <h2 class="text-xl font-semibold text-slate-800 mb-4">About the Project</h2>
+        <p class="text-slate-700 leading-relaxed mb-4">
+          This platform allows users to play the traditional Portuguese card game <strong>Bisca</strong>. 
+          It features a complete Single Page Application (SPA) with real-time multiplayer capabilities.
         </p>
+        <ul class="list-disc list-inside text-slate-600 space-y-1 ml-4">
+          <li><strong>Frontend:</strong> Vue.js (Composition API + Pinia)</li>
+          <li><strong>Backend:</strong> Laravel API (Sanctum Auth + SQLite)</li>
+          <li><strong>Real-time:</strong> Node.js + Socket.io</li>
+        </ul>
       </div>
 
-
-      <section class="bg-white rounded-lg shadow-sm border border-slate-200 overflow-hidden">
-        <div class="bg-gradient-to-r from-emerald-500 to-emerald-600 px-6 py-4">
-          <h3 class="text-xl font-semibold text-white flex items-center gap-2">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
-            </svg>
-            REST API
-          </h3>
+      <div class="bg-white rounded-lg shadow-sm border border-slate-200 overflow-hidden">
+        <div class="bg-slate-50 px-6 py-4 border-b border-slate-200">
+          <h3 class="text-lg font-medium text-slate-900">System Status</h3>
         </div>
-        <div class="p-6 space-y-4">
-          <div class="flex items-center justify-between py-3 border-b border-slate-100">
-            <span class="text-sm font-medium text-slate-600">API Name</span>
-            <span class="text-base font-semibold text-slate-900 bg-slate-100 px-3 py-1 rounded-md">
-              {{ api.name }}
-            </span>
-          </div>
-          <div class="flex items-center justify-between py-3">
-            <span class="text-sm font-medium text-slate-600">API Version</span>
-            <span
-              class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-emerald-100 text-emerald-800">
-              v{{ api.version }}
-            </span>
-          </div>
-        </div>
-      </section>
-
-
-      <section class="bg-white rounded-lg shadow-sm border border-slate-200 overflow-hidden">
-        <div class="bg-gradient-to-r from-blue-500 to-blue-600 px-6 py-4">
-          <h3 class="text-xl font-semibold text-white flex items-center gap-2">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.141 0M1.394 9.393c5.857-5.857 15.355-5.857 21.213 0" />
-            </svg>
-            Web Socket
-          </h3>
-        </div>
+        
         <div class="p-6 space-y-6">
+          
+          <div class="flex items-center justify-between p-4 bg-slate-50 rounded-lg border border-slate-100">
+            <div>
+              <p class="text-sm font-medium text-slate-600">API Connection</p>
+              <p class="text-xs text-slate-500 mt-1">{{ api.name || 'Connecting...' }}</p>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-mono bg-white px-2 py-1 rounded border border-slate-200">
+                v{{ api.version || '---' }}
+              </span>
+              <span :class="['w-2 h-2 rounded-full', api.version ? 'bg-green-500' : 'bg-red-500']"></span>
+            </div>
+          </div>
 
-          <div class="flex items-center justify-between py-3 border-b border-slate-100">
-            <span class="text-sm font-medium text-slate-600">Connection Status</span>
+          <div class="flex items-center justify-between p-4 bg-slate-50 rounded-lg border border-slate-100">
+            <div>
+              <p class="text-sm font-medium text-slate-600">WebSocket Server</p>
+              <p class="text-xs text-slate-500 mt-1">Real-time communication status</p>
+            </div>
             <span :class="[
               'inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm font-medium',
-              socket.connected
-                ? 'bg-green-100 text-green-800'
-                : 'bg-red-100 text-red-800'
+              socket.connected ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
             ]">
-              <span :class="[
-                'w-2 h-2 rounded-full',
-                socket.connected ? 'bg-green-500 animate-pulse' : 'bg-red-500'
-              ]"></span>
+              <span :class="['w-2 h-2 rounded-full', socket.connected ? 'bg-green-500 animate-pulse' : 'bg-red-500']"></span>
               {{ socket.connected ? 'Connected' : 'Disconnected' }}
             </span>
           </div>
-
-
-          <div class="space-y-4">
-            <div>
-              <label for="message" class="block text-sm font-medium text-slate-700 mb-2">
-                Send Message
-              </label>
-              <div class="flex gap-3">
-                <Input id="message" v-model="message" type="text" placeholder="Type your message..." class="flex-1" />
-                <Button type="button" @click="socket.emit('echo', message)">
-                  Send
-                </Button>
-              </div>
-            </div>
-
-
-            <div v-if="received" class="bg-slate-50 border border-slate-200 rounded-lg p-4">
-              <p class="text-xs font-medium text-slate-500 mb-1">Received Message:</p>
-              <p class="text-slate-900 font-medium">{{ received }}</p>
-            </div>
-          </div>
         </div>
-      </section>
+      </div>
     </div>
   </div>
 </template>

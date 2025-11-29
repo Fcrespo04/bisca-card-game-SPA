@@ -10,6 +10,8 @@ class CoinPurchase extends Model
 {
     use HasFactory;
 
+    public $timestamps = false;
+
     protected $fillable = [
         'purchase_datetime',
         'user_id',

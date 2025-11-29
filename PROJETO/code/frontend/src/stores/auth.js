@@ -74,16 +74,27 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   const updateUserPhoto = async (file) => {
-    // 1. Upload (logic is in api.js)
+    // upload
     const response = await apiStore.uploadProfilePhoto(file)
     const photoUrl = response.data.photo_url || response.data.photo_avatar_filename
     
-    // 2. Patch User Record (logic is in api.js)
+    // patch User Record
     const patchResponse = await apiStore.patchUserPhoto(currentUser.value.id, photoUrl)
     
-    // 3. Update Local State (So the avatar changes in the UI)
+    // avatar changes in the UI
     currentUser.value = patchResponse.data.data
     return currentUser.value
+  }
+
+  const buyCoins = async (purchaseData) => {
+    const response = await apiStore.postTransaction(purchaseData)
+    await getUser() 
+    return response.data
+  }
+
+  const fetchTransactions = async () => {
+    const response = await apiStore.getTransactions()
+    return response.data.data // Laravel Resource wraps in 'data'
   }
 
   return {
@@ -97,5 +108,7 @@ export const useAuthStore = defineStore('auth', () => {
     deleteAccount,
     updateUser,
     updateUserPhoto,
+    buyCoins,
+    fetchTransactions,
   }
 })

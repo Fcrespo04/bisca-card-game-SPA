@@ -6,6 +6,8 @@ use App\Http\Controllers\CardFaceController;
 use App\Http\Controllers\FileController;
 use App\Http\Controllers\GameController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\TransactionController;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -34,6 +36,9 @@ Route::middleware('auth:sanctum')->group(function () {
         'board-themes' => BoardThemeController::class,
     ]);
     Route::patch('/users/{user}/photo-url', [UserController::class, 'patchPhotoURL']);
+
+    Route::get('/transactions', [TransactionController::class, 'index']);
+    Route::post('/transactions', [TransactionController::class, 'store']);
 });
 
 Route::get('/metadata', function (Request $request) {

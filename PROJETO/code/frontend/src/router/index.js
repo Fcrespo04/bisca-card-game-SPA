@@ -11,6 +11,7 @@ import { useAuthStore } from '@/stores/auth'
 import MultiplayerLobbyPage from '@/pages/game/MultiplayerLobbyPage.vue'
 import MultiplayerGamePage from '@/pages/game/MultiplayerGamePage.vue'
 import RegisterPage from '@/pages/register/RegisterPage.vue'
+import ShopPage from '@/pages/transactions/ShopPage.vue'
 import { toast } from 'vue-sonner'
 
 const router = createRouter({
@@ -62,6 +63,12 @@ const router = createRouter({
       path: '/profile',
       name: 'profile',
       component: ProfilePage,
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/transactions',
+      name: 'transactions',
+      component: ShopPage,
       meta: { requiresAuth: true },
     },
     {

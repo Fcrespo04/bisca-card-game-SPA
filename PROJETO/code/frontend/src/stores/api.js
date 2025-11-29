@@ -81,6 +81,14 @@ export const useAPIStore = defineStore('api', () => {
     return axios.delete(`${API_BASE_URL}/board-themes/${id}`)
   }
 
+  const postTransaction = (data) => {
+    return axios.post(`${API_BASE_URL}/transactions`, data)
+  }
+
+  const getTransactions = () => {
+    return axios.get(`${API_BASE_URL}/transactions`)
+  }
+
 
   // Files
 
@@ -136,5 +144,7 @@ export const useAPIStore = defineStore('api', () => {
     uploadProfilePhoto,
     uploadCardFaces,
     deleteBoardTheme,
+    postTransaction,
+    getTransactions,
   }
 })

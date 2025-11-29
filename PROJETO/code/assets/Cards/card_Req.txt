@@ -1,0 +1,6 @@
+Rainbow  - 5 Coins
+Carnival - 10 Coins
+Ancient  - 20 Coins
+
+Gold     - Win 10 Matches
+Platinum - Win 50 Matches
