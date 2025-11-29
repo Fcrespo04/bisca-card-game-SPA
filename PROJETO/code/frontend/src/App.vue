@@ -15,6 +15,14 @@
         </RouterLink>
       </div>
     </div>
+    <div class="align-middle text-xl flex items-center gap-4">
+      <div v-if="authStore.currentUser" class="flex items-center gap-3 ...">
+        <RouterLink to="/card-packs" class="flex items-center gap-1 hover:text-blue-600 transition-colors" title="Card Shop">
+          <span>🃏</span>
+          <span class="text-xs bg-purple-100 text-purple-700 px-1.5 py-0.5 rounded ml-1">Card Packs</span>
+        </RouterLink>
+      </div>
+    </div>
     <NavigationMenu>
       <NavigationMenuList class="justify-around gap-20">
         <NavigationMenuItem>
@@ -48,7 +56,7 @@
                 <RouterLink to="/profile">Profile</RouterLink>
               </NavigationMenuLink>
               <NavigationMenuLink as-child>
-                <RouterLink to="/themes">My Themes</RouterLink>
+                <RouterLink to="/my-cards">Card Collection</RouterLink>
               </NavigationMenuLink>
               <NavigationMenuLink as-child>
                 <a @click.prevent="logout" class="cursor-pointer">Logout</a>

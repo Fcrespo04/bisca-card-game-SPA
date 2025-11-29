@@ -63,24 +63,6 @@ export const useAPIStore = defineStore('api', () => {
     return axios.get(`${API_BASE_URL}/games`)
   }
 
-  // Board Themes
-
-  const getBoardThemes = async () => {
-    return axios.get(`${API_BASE_URL}/board-themes`)
-  }
-
-  const postBoardTheme = async (data) => {
-    return axios.post(`${API_BASE_URL}/board-themes`, data)
-  }
-
-  const postCardFace = async (data) => {
-    return axios.post(`${API_BASE_URL}/card-faces`, data)
-  }
-
-  const deleteBoardTheme = async (id) => {
-    return axios.delete(`${API_BASE_URL}/board-themes/${id}`)
-  }
-
   const postTransaction = (data) => {
     return axios.post(`${API_BASE_URL}/transactions`, data)
   }
@@ -128,6 +110,12 @@ export const useAPIStore = defineStore('api', () => {
     return uploadPromise
   }
 
+  const getCardDecks = () => axios.get(`${API_BASE_URL}/card-decks`)
+  
+  const purchaseDeck = (deckId) => axios.post(`${API_BASE_URL}/card-decks/${deckId}/purchase`)
+  
+  const equipDeck = (deckId) => axios.post(`${API_BASE_URL}/card-decks/${deckId}/equip`)
+
   return {
     postLogin,
     postLogout,
@@ -138,13 +126,12 @@ export const useAPIStore = defineStore('api', () => {
     deleteUser,
     postGame,
     getGames,
-    getBoardThemes,
-    postBoardTheme,
-    postCardFace,
     uploadProfilePhoto,
     uploadCardFaces,
-    deleteBoardTheme,
     postTransaction,
     getTransactions,
+    getCardDecks,
+    purchaseDeck,
+    equipDeck,
   }
 })

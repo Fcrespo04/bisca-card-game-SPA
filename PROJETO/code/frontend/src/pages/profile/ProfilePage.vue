@@ -45,7 +45,7 @@
                     <div class="p-4 bg-yellow-50 border border-yellow-200 rounded-md flex items-center gap-2 text-yellow-800">
                         <span class="text-xl">💰</span>
                         <span class="font-semibold">Balance:</span>
-                        <span>{{ authStore.currentUser.coins_balance }} Brain Coins</span>
+                        <span>{{ authStore.currentUser.coins_balance }} Coins</span>
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
