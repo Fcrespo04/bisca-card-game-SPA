@@ -71,7 +71,7 @@ class CardDecksSeeder extends Seeder
                 'slug' => 'master',
                 'type' => 'POINTS',
                 'price' => 0,
-                'wins_required' => 0,
+                'wins_required' => 3,
                 'min_points_required' => 100, 
                 'image_filename' => 'Master/general.jpg',
                 'semFace' => 'Master/semFace.jpg'

@@ -37,31 +37,31 @@
           </div>
           <div v-if="(deck.type === 'WINS' || deck.type === 'POINTS') && !deck.is_owned" class="space-y-2">
             <div class="flex justify-between text-sm">
-              <span>Progress</span>         
+              <span>Progress</span>             
               <span v-if="deck.type === 'WINS'" class="font-medium">
-                 {{ deck.user_progress }} / {{ deck.wins_required }} Wins
+                 {{ deck.user_progress }} / {{ deck.wins_required }} Matches
               </span>
               <span v-else class="font-medium">
-                 Best: {{ deck.user_progress }} / {{ deck.min_points_required }} Pts
+                 {{ deck.user_progress }} / {{ deck.wins_required }} Games ({{ deck.min_points_required }}+ pts)
               </span>
-            </div>        
+            </div>         
             <Progress 
-              :model-value="Math.min(100, (deck.user_progress / (deck.type === 'WINS' ? deck.wins_required : deck.min_points_required)) * 100)" 
-              class="h-2" 
+                :model-value="Math.min(100, (deck.user_progress / deck.wins_required) * 100)" 
+                class="h-2" 
             />
           </div>
           <Button class="w-full" 
             :disabled="deck.is_owned || (deck.type === 'COINS' && authStore.currentUser.coins_balance < deck.price) || ((deck.type === 'WINS' || deck.type === 'POINTS') && !deck.can_claim)"
             :variant="deck.is_owned ? 'secondary' : 'default'"
-            @click="handlePurchase(deck)">       
+            @click="handlePurchase(deck)">      
             <span v-if="deck.is_owned">In Collection</span>
             <span v-else-if="deck.type === 'FREE'">Claim Free</span>
-            <span v-else-if="deck.type === 'COINS'">Buy for {{ deck.price }} 💰</span>       
+            <span v-else-if="deck.type === 'COINS'">Buy for {{ deck.price }} 💰</span>   
             <span v-else-if="deck.type === 'WINS'">
-              {{ deck.can_claim ? 'Claim Reward!' : `Win ${deck.wins_required - deck.user_progress} more` }}
+              {{ deck.can_claim ? 'Claim Reward!' : `Win ${deck.wins_required - deck.user_progress} more matches` }}
             </span>
             <span v-else-if="deck.type === 'POINTS'">
-              {{ deck.can_claim ? 'Claim Master Deck!' : `Win a match with 100+ points` }}
+              {{ deck.can_claim ? 'Claim Master Deck!' : `Need ${deck.wins_required - deck.user_progress} more games` }}
             </span>
           </Button>
         </CardContent>

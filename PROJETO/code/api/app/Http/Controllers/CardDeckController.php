@@ -12,27 +12,35 @@ class CardDeckController extends Controller
     public function index(Request $request)
     {
         $user = $request->user();
-        // Count matches won (Winner ID = User ID)
-        $wins = $user->matchesWon()->count(); 
+        $totalWins = $user->matchesWon()->count(); // For 'WINS' type (Gold/Platinum)
+        
+        // --- UPDATED: Count High-Score Games for 'POINTS' type ---
+        // Get all games won by the user
+        $wonGames = $user->gamesWon; 
 
-        // looks at all matches the user won, and find the max points they scored
-        $bestScore = $user->matchesWon->map(function ($match) use ($user) {
-            // If user was player 1, get player1_points, else player2_points
-            return $match->player1_user_id === $user->id 
-                ? $match->player1_points 
-                : $match->player2_points;
-        })->max() ?? 0;
-
-        $decks = CardDeck::all()->map(function ($deck) use ($user, $wins, $bestScore) {
+        $decks = CardDeck::all()->map(function ($deck) use ($user, $totalWins, $wonGames) {
             $isOwned = $user->cardDecks->contains($deck->id);
             
             $canClaim = false;
+            $progress = 0;
+
+            // Logic for standard 'WINS' decks (Gold/Platinum)
             if ($deck->type === 'WINS' && !$isOwned) {
-                $canClaim = $wins >= $deck->wins_required;
+                $canClaim = $totalWins >= $deck->wins_required;
+                $progress = $totalWins;
             }
+            // Logic for 'POINTS' decks (Master)
             elseif ($deck->type === 'POINTS' && !$isOwned) {
-                $canClaim = $bestScore >= $deck->min_points_required;
-                $progress = $bestScore; 
+                // Count how many games meet the point requirement
+                $highScoreCount = $wonGames->filter(function ($game) use ($user, $deck) {
+                    $myPoints = $game->player1_user_id == $user->id 
+                        ? $game->player1_points 
+                        : $game->player2_points;
+                    return $myPoints >= $deck->min_points_required;
+                })->count();
+
+                $canClaim = $highScoreCount >= $deck->wins_required; // e.g., 3 games
+                $progress = $highScoreCount;
             }
 
             return [
@@ -42,13 +50,13 @@ class CardDeckController extends Controller
                 'type' => $deck->type,
                 'price' => $deck->price,
                 'wins_required' => $deck->wins_required,
+                'min_points_required' => $deck->min_points_required,
                 'image' => $deck->image_filename,
                 'semFace' => $deck->semFace,
                 'is_owned' => $isOwned,
                 'is_active' => $user->current_card_deck_id === $deck->id,
-                'user_progress' => $wins, 
-                'can_claim' => $canClaim,
-                'min_points_required' => $deck->min_points_required,
+                'user_progress' => $progress,
+                'can_claim' => $canClaim
             ];
         });
 
@@ -70,34 +78,32 @@ class CardDeckController extends Controller
             
             DB::transaction(function () use ($user, $deck) {
                 $user->decrement('coins_balance', $deck->price);
-                
                 \App\Models\CoinTransaction::create([
                     'user_id' => $user->id,
                     'coin_transaction_type_id' => 7, 
                     'transaction_datetime' => now(),
-                    'coins' => -1 * abs($deck->price), 
-                    'custom' => ['deck_name' => $deck->name] 
+                    'coins' => -1 * abs($deck->price),
+                    'custom' => ['deck_name' => $deck->name]
                 ]);
-
                 $user->cardDecks()->attach($deck->id);
             });
-        }
+        } 
         elseif ($deck->type === 'WINS') {
-            $wins = $user->matchesWon()->count();
-            if ($wins < $deck->wins_required) {
+            if ($user->matchesWon()->count() < $deck->wins_required) {
                 return response()->json(['message' => 'Not enough wins yet.'], 403);
             }
             $user->cardDecks()->attach($deck->id);
         }
         elseif ($deck->type === 'POINTS') {
-            $bestScore = $user->matchesWon->map(function ($match) use ($user) {
-                return $match->player1_user_id === $user->id 
-                    ? $match->player1_points 
-                    : $match->player2_points;
-            })->max() ?? 0;
+            $highScoreCount = $user->gamesWon->filter(function ($game) use ($user, $deck) {
+                $myPoints = $game->player1_user_id == $user->id 
+                    ? $game->player1_points 
+                    : $game->player2_points;
+                return $myPoints >= $deck->min_points_required;
+            })->count();
 
-            if ($bestScore < $deck->min_points_required) {
-                return response()->json(['message' => 'You strictly need a legendary win (100+ pts) to claim this!'], 403);
+            if ($highScoreCount < $deck->wins_required) {
+                return response()->json(['message' => "You need {$deck->wins_required} legendary games to claim this!"], 403);
             }
             $user->cardDecks()->attach($deck->id);
         }

@@ -17,7 +17,7 @@
         
         <CardContent class="space-y-4">
             <div class="aspect-video bg-slate-100 rounded-md overflow-hidden flex items-center justify-center">
-                <img :src="`${serverBaseURL}/storage/card_decks/${deck.semFace ? 'semFace_' + deck.semFace : deck.image_filename}`" 
+                <img :src="`${serverBaseURL}/storage/card_decks/${deck.semFace}`" 
                      class="object-contain w-full h-full p-2">
             </div>
 
