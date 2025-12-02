@@ -34,6 +34,10 @@ class TransactionController extends Controller
     {
         $validated = $request->validated();
         $user = $request->user();
+
+        if ($user->type === 'A') {
+            return response()->json(['message' => 'Administrators cannot participate in the economy.'], 403);
+        }
         
         // Call External Payment Gateway
         $response = Http::post('https://dad-payments-api.vercel.app/api/debit', [

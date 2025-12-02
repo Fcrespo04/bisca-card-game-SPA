@@ -21,7 +21,13 @@ class GameController extends Controller
      * Store a newly created resource in storage.
      */
     public function store(StoreGameRequest $request)
-    {
+    {   
+        $user = $request->user();
+
+        // --- NEW: Block Admins ---
+        if ($user->type === 'A') {
+            return response()->json(['message' => 'Administrators cannot play games.'], 403);
+        }
         $game = Game::create($request->validated());
         return new GameResource($game);
     }

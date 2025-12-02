@@ -13,8 +13,11 @@ class CardDeckController extends Controller
     {
         $user = $request->user();
         $totalWins = $user->matchesWon()->count(); // For 'WINS' type (Gold/Platinum)
+
+        if ($user->type === 'A') {
+            return response()->json([]); // Return empty list
+        }
         
-        // --- UPDATED: Count High-Score Games for 'POINTS' type ---
         // Get all games won by the user
         $wonGames = $user->gamesWon; 
 
@@ -66,6 +69,10 @@ class CardDeckController extends Controller
     public function purchase(Request $request, CardDeck $deck)
     {
         $user = $request->user();
+
+        if ($user->type === 'A') {
+            return response()->json(['message' => 'Administrators cannot buy decks.'], 403);
+        }
 
         if ($user->cardDecks->contains($deck->id)) {
             return response()->json(['message' => 'You already own this deck.'], 400);
