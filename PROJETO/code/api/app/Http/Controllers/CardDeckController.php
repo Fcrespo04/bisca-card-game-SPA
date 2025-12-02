@@ -43,6 +43,7 @@ class CardDeckController extends Controller
                 'price' => $deck->price,
                 'wins_required' => $deck->wins_required,
                 'image' => $deck->image_filename,
+                'semFace' => $deck->semFace,
                 'is_owned' => $isOwned,
                 'is_active' => $user->current_card_deck_id === $deck->id,
                 'user_progress' => $wins, 
@@ -69,9 +70,18 @@ class CardDeckController extends Controller
             
             DB::transaction(function () use ($user, $deck) {
                 $user->decrement('coins_balance', $deck->price);
+                
+                \App\Models\CoinTransaction::create([
+                    'user_id' => $user->id,
+                    'coin_transaction_type_id' => 7, 
+                    'transaction_datetime' => now(),
+                    'coins' => -1 * abs($deck->price), 
+                    'custom' => ['deck_name' => $deck->name] 
+                ]);
+
                 $user->cardDecks()->attach($deck->id);
             });
-        } 
+        }
         elseif ($deck->type === 'WINS') {
             $wins = $user->matchesWon()->count();
             if ($wins < $deck->wins_required) {

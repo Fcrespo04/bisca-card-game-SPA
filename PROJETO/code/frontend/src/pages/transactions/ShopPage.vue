@@ -114,6 +114,9 @@
                   <span v-if="t.purchase">
                     {{ t.purchase.payment_type }} ({{ t.purchase.euros }}€)
                   </span>
+                  <span v-else-if="t.custom && t.custom.deck_name">
+                     Bought <strong>{{ t.custom.deck_name }}</strong>
+                  </span>
                   <span v-else>-</span>
                 </td>
               </tr>

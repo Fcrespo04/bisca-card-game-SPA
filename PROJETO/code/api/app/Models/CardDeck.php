@@ -9,7 +9,7 @@ class CardDeck extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'slug', 'type', 'price', 'wins_required','min_points_required', 'image_filename'];
+    protected $fillable = ['name', 'slug', 'type', 'price', 'wins_required','min_points_required', 'image_filename', 'semFace'];
 
     public function owners()
     {

@@ -18,7 +18,8 @@ class CardDecksSeeder extends Seeder
                 'type' => 'FREE',
                 'price' => 0,
                 'wins_required' => 0,
-                'image_filename' => 'Standard/semFace.jpg' 
+                'image_filename' => 'Standard/general.jpg',
+                'semFace' => 'Standard/semFace.jpg' 
             ],
             [
                 'name' => 'Rainbow',
@@ -26,7 +27,8 @@ class CardDecksSeeder extends Seeder
                 'type' => 'COINS',
                 'price' => 5,
                 'wins_required' => 0,
-                'image_filename' => 'Rainbow/semFace.jpg' 
+                'image_filename' => 'Rainbow/general.jpg',
+                'semFace' => 'Rainbow/semFace.jpg'
             ],
             [
                 'name' => 'Carnival',
@@ -34,7 +36,8 @@ class CardDecksSeeder extends Seeder
                 'type' => 'COINS',
                 'price' => 10,
                 'wins_required' => 0,
-                'image_filename' => 'Carnival/semFace.jpg'
+                'image_filename' => 'Carnival/general.jpg',
+                'semFace' => 'Carnival/semFace.jpg'
             ],
             [
                 'name' => 'Ancient',
@@ -42,7 +45,8 @@ class CardDecksSeeder extends Seeder
                 'type' => 'COINS',
                 'price' => 20,
                 'wins_required' => 0,
-                'image_filename' => 'Ancient/semFace.jpg'
+                'image_filename' => 'Ancient/general.jpg',
+                'semFace' => 'Ancient/semFace.jpg'
             ],
             [
                 'name' => 'Gold',
@@ -50,7 +54,8 @@ class CardDecksSeeder extends Seeder
                 'type' => 'WINS',
                 'price' => 0,
                 'wins_required' => 5,
-                'image_filename' => 'Gold/semFace.jpg'
+                'image_filename' => 'Gold/general.jpg',
+                'semFace' => 'Gold/semFace.jpg'
             ],
             [
                 'name' => 'Platinum',
@@ -58,7 +63,8 @@ class CardDecksSeeder extends Seeder
                 'type' => 'WINS',
                 'price' => 0,
                 'wins_required' => 10,
-                'image_filename' => 'Platinum/semFace.jpg'
+                'image_filename' => 'Platinum/general.jpg',
+                'semFace' => 'Platinum/semFace.jpg'
             ],
             [
                 'name' => 'Master',
@@ -67,7 +73,8 @@ class CardDecksSeeder extends Seeder
                 'price' => 0,
                 'wins_required' => 0,
                 'min_points_required' => 100, 
-                'image_filename' => 'Master/general.jpg'
+                'image_filename' => 'Master/general.jpg',
+                'semFace' => 'Master/semFace.jpg'
             ],
         ];
 

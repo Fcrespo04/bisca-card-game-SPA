@@ -20,6 +20,7 @@ return new class extends Migration
             $table->integer('wins_required')->nullable(); // Matches won needed
             $table->integer('min_points_required')->nullable(); // Minimum points needed
             $table->string('image_filename')->nullable(); // Pack Logo
+            $table->string('semFace')->nullable();
             $table->timestamps();
         });
 

@@ -15,7 +15,7 @@ class TransactionResource extends JsonResource
             'type' => $this->transactionType->name, // "Coin purchase", "Bonus"
             'coins' => $this->coins,
             'new_balance' => null, // compute running balance if needed
-            // Only include purchase details if they exist
+            'custom' => $this->custom,
             'purchase' => $this->purchase ? [
                 'euros' => $this->purchase->euros,
                 'payment_type' => $this->purchase->payment_type,

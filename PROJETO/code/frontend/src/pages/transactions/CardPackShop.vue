@@ -12,7 +12,6 @@
         </div>
       </div>
     </div>
-
     <div v-if="isLoading" class="text-center py-12">Loading shop...</div>
 
     <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -47,8 +46,8 @@
               </span>
             </div>        
             <Progress 
-                :value="(deck.user_progress / (deck.type === 'WINS' ? deck.wins_required : deck.min_points_required)) * 100" 
-                class="h-2" 
+              :model-value="Math.min(100, (deck.user_progress / (deck.type === 'WINS' ? deck.wins_required : deck.min_points_required)) * 100)" 
+              class="h-2" 
             />
           </div>
           <Button class="w-full" 
