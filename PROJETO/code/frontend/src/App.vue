@@ -2,13 +2,15 @@
   <Toaster richColors />
   <nav class="max-w-full p-5 flex flex-row justify-between align-middle">
     <div class="align-middle text-xl flex items-center gap-4">
-      <RouterLink to="/"> Bisca Game </RouterLink> 
-      <div v-if="authStore.currentUser" class="flex items-center gap-3 text-sm bg-slate-100 px-3 py-1 rounded-full border border-slate-200">
+      <RouterLink to="/"> Bisca Game </RouterLink>
+      <div v-if="authStore.currentUser"
+        class="flex items-center gap-3 text-sm bg-slate-100 px-3 py-1 rounded-full border border-slate-200">
         <span class="font-medium text-slate-700">
           {{ authStore.currentUser.nickname || authStore.currentUser.name }}
         </span>
         <span class="text-slate-300">|</span>
-        <RouterLink to="/transactions" class="flex items-center gap-1 hover:text-blue-600 transition-colors" title="Buy Coins">
+        <RouterLink to="/transactions" class="flex items-center gap-1 hover:text-blue-600 transition-colors"
+          title="Buy Coins">
           <span class="font-bold text-yellow-600">{{ authStore.currentUser.coins_balance }}</span>
           <span>💰</span>
           <span class="text-xs bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded ml-1">Shop</span>
@@ -17,12 +19,23 @@
     </div>
     <div class="align-middle text-xl flex items-center gap-4">
       <div v-if="authStore.currentUser" class="flex items-center gap-3 ...">
-        <RouterLink to="/card-packs" class="flex items-center gap-1 hover:text-blue-600 transition-colors" title="Card Shop">
+        <RouterLink to="/card-packs" class="flex items-center gap-1 hover:text-blue-600 transition-colors"
+          title="Card Shop">
           <span>🃏</span>
           <span class="text-xs bg-purple-100 text-purple-700 px-1.5 py-0.5 rounded ml-1">Card Packs</span>
         </RouterLink>
       </div>
     </div>
+       <div class="align-middle text-xl flex items-center gap-4">
+      <div class="flex items-center gap-3 ...">
+        <RouterLink to="/leaderboard" class="flex items-center gap-1 hover:text-blue-600 transition-colors"
+          title="Leaderboard">
+          <span>🏆</span>
+          <span class="text-xs bg-yellow-100 text-yellow-700 px-1.5 py-0.5 rounded ml-1">Leaderboard</span>
+        </RouterLink>
+      </div>
+    </div>
+
     <NavigationMenu>
       <NavigationMenuList class="justify-around gap-20">
         <NavigationMenuItem>
@@ -55,6 +68,9 @@
               <NavigationMenuLink as-child>
                 <RouterLink to="/profile">Profile</RouterLink>
               </NavigationMenuLink>
+                <NavigationMenuLink as-child>
+                  <RouterLink to="/history" class="block p-2 hover:bg-slate-50 rounded-md text-sm text-slate-700">My History</RouterLink>
+                </NavigationMenuLink>
               <NavigationMenuLink as-child>
                 <RouterLink to="/my-cards">Card Collection</RouterLink>
               </NavigationMenuLink>

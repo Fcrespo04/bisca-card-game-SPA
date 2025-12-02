@@ -7,6 +7,7 @@ use App\Http\Controllers\FileController;
 use App\Http\Controllers\GameController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\TransactionController;
+use App\Http\Controllers\HistoryController;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -15,6 +16,8 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::post('/register', [AuthController::class, 'register']);
 
 Route::apiResource('games', GameController::class)->only(['index', 'show', 'store']);
+
+Route::get('/leaderboard/global', [HistoryController::class, 'leaderboardGlobal']);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/users/me', function (Request $request) {
@@ -43,6 +46,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/card-decks', [\App\Http\Controllers\CardDeckController::class, 'index']);
     Route::post('/card-decks/{deck}/purchase', [\App\Http\Controllers\CardDeckController::class, 'purchase']);
     Route::post('/card-decks/{deck}/equip', [\App\Http\Controllers\CardDeckController::class, 'equip']);
+
+    Route::get('/history', [HistoryController::class, 'index']);
+    Route::get('/statistics/personal', [HistoryController::class, 'statisticsPersonal']);
+
 });
 
 Route::get('/metadata', function (Request $request) {
