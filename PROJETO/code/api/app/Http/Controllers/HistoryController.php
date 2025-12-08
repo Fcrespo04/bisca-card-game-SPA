@@ -262,4 +262,86 @@ public function statisticsPersonal(Request $request)
     return response()->json($stats);
 }
 
+public function listAllUsers(Request $request)
+{
+    // 1. Definição da Query
+    $query = User::select('id', 'name', 'email', 'nickname', 'blocked', 'photo_avatar_filename', 'coins_balance', 'created_at')
+                  ->orderBy('id', 'asc');
+    
+    // Obter o número da página do request
+    $page = $request->query('page', 1);
+
+    // 2. Executar Paginação (10 em 10)
+    $Users = $query->paginate(10, ['*'], 'page', $page);
+
+    // 3. Devolver o Objeto de Paginação Completo
+    // A estrutura de paginação (current_page, last_page, data, etc.) é devolvida automaticamente
+    // pelo método ->paginate(). Não precisamos de a aninhar em 'users' no retorno.
+    return response()->json($Users);
+}
+
+public function statisticsPlayer(Request $request, User $user)
+{
+    // 1. 🛡️ Segurança: Requer que o utilizador logado seja Admin ('A')
+    if ($request->user()->type !== 'A') {
+        return response()->json(['error' => 'Acesso negado. Apenas administradores.'], 403);
+    }
+    
+    $id = $user->id; // O ID do jogador cujas estatísticas queremos ver
+
+    // --- CÁLCULO DO SCORE TOTAL (Multiplayer) ---
+    $totalScore = Game::where(function($q) use ($id) {
+            $q->where('player1_user_id', $id)
+              ->orWhere('player2_user_id', $id);
+        })
+        ->where('status', 'Ended')
+        ->whereNotNull('match_id') // Apenas jogos multiplayer terminados
+        ->sum(DB::raw("CASE 
+                        WHEN player1_user_id = {$id} THEN player1_points 
+                        WHEN player2_user_id = {$id} THEN player2_points 
+                        ELSE 0 
+                      END"));
+    
+    // --- 1. QUERY COMPLEXA (Capotes/Bandeiras) ---
+    // Nota: É importante usar o setBindings com o ID para segurança SQL
+    $conquestStats = Game::select(
+                DB::raw('SUM(CASE 
+                    WHEN winner_user_id = ? AND player1_points >= 120 THEN 1 
+                    WHEN winner_user_id = ? AND player2_points >= 120 THEN 1 
+                    ELSE 0 END) as total_bandeiras'),
+
+                DB::raw('SUM(CASE 
+                    WHEN winner_user_id = ? AND player1_points >= 91 AND player1_points < 120 THEN 1 
+                    WHEN winner_user_id = ? AND player2_points >= 91 AND player2_points < 120 THEN 1 
+                    ELSE 0 END) as total_capotes')
+            )
+            ->whereNotNull('match_id')
+            ->setBindings([$id, $id, $id, $id], 'select')
+            ->first();
+    
+    // --- 2. TOTAIS PESSOAIS (Multiplayer Apenas) ---
+    $stats = [
+        'matches_played' => GameMatch::where(function($q) use ($id) {
+            $q->where('player1_user_id', $id)->orWhere('player2_user_id', $id);
+        })->whereNotNull('player2_user_id')->count(),
+                                    
+        'matches_won' => GameMatch::where('winner_user_id', $id)
+            ->whereNotNull('player2_user_id')->count(),
+        
+        'games_played' => Game::where(function($q) use ($id) {
+            $q->where('player1_user_id', $id)->orWhere('player2_user_id', $id);
+        })->whereNotNull('match_id')->count(),
+                                    
+        'games_won' => Game::where('winner_user_id', $id)
+            ->whereNotNull('match_id')->count(),
+        
+        'capotes' => (int) ($conquestStats->total_capotes ?? 0), 
+        'bandeiras' => (int) ($conquestStats->total_bandeiras ?? 0),
+        
+        'total_score' => (int) $totalScore
+    ];
+
+    return response()->json($stats);
+}
+
 }

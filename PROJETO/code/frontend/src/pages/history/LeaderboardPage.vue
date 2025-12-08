@@ -6,7 +6,7 @@
       <p class="text-slate-600 text-lg">Os melhores jogadores de Bisca</p>
     </div>
 
-    <Card v-if="authStore.isLoggedIn && personalStats"
+    <Card v-if="authStore.isLoggedIn && personalStats && !(authStore.currentUser?.type === 'A')"
       class="bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200 shadow-sm">
       <CardHeader>
         <CardTitle class="text-blue-900 text-center text-xl">As Minhas Estatísticas</CardTitle>

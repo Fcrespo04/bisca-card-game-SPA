@@ -18,6 +18,8 @@ Route::post('/register', [AuthController::class, 'register']);
 Route::apiResource('games', GameController::class)->only(['index', 'show', 'store']);
 
 Route::get('/leaderboard/global', [HistoryController::class, 'leaderboardGlobal']);
+Route::get('/users/list', [HistoryController::class, 'listAllUsers']);
+
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/users/me', function (Request $request) {
@@ -49,6 +51,8 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('/history', [HistoryController::class, 'index']);
     Route::get('/statistics/personal', [HistoryController::class, 'statisticsPersonal']);
+    Route::get('/admin/stats/{user}', [HistoryController::class, 'statisticsPlayer']);
+    
 });
 
 Route::get('/metadata', function (Request $request) {

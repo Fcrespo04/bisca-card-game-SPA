@@ -130,6 +130,15 @@ export const useAPIStore = defineStore('api', () => {
     return axios.get(`${API_BASE_URL}/statistics/personal`)
   }
 
+  const getUsersList = (page = 1) => {
+    return axios.get(`${API_BASE_URL}/users/list?page=${page}`)
+  }
+  
+  const getPlayerStats = (userId) => {
+        // Rota: GET /api/admin/stats/123
+        return axios.get(`${API_BASE_URL}/admin/stats/${userId}`);
+    }
+
 
   return {
     postLogin,
@@ -151,5 +160,7 @@ export const useAPIStore = defineStore('api', () => {
     getHistory,
     getGlobalLeaderboard,
     getPersonalStats,
+    getUsersList,
+    getPlayerStats
   }
 })

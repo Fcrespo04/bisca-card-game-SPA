@@ -71,6 +71,9 @@
               <NavigationMenuLink as-child>
                 <RouterLink to="/history">History</RouterLink>
               </NavigationMenuLink>
+              <NavigationMenuLink as-child v-if="authStore.isLoggedIn && authStore.currentUser?.type === 'A'">
+                <RouterLink to="/users">Users</RouterLink>
+              </NavigationMenuLink>
               <NavigationMenuLink as-child>
                 <RouterLink to="/my-cards">Card Collection</RouterLink>
               </NavigationMenuLink>

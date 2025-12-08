@@ -14,6 +14,7 @@ import CardPacksShop from '@/pages/transactions/CardPackShop.vue'
 import MyCardCollection from '@/pages/profile/MyCardCollection.vue'
 import HistoryPage from '@/pages/history/HistoryPage.vue'
 import LeaderboardPage from '@/pages/history/LeaderboardPage.vue'
+import UsersList from '@/pages/history/UsersList.vue'
 import { toast } from 'vue-sonner'
 
 const router = createRouter({
@@ -101,6 +102,12 @@ const router = createRouter({
       path: '/leaderboard',
       name: 'leaderboard',
       component: LeaderboardPage,
+    },
+    {
+      path: '/users',
+      name: 'users',
+      component: UsersList,
+      meta: { requiresAuth: true },
     },
   ],
 })
