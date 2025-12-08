@@ -26,7 +26,7 @@
         </RouterLink>
       </div>
     </div>
-       <div class="align-middle text-xl flex items-center gap-4">
+    <div class="align-middle text-xl flex items-center gap-4">
       <div class="flex items-center gap-3 ...">
         <RouterLink to="/leaderboard" class="flex items-center gap-1 hover:text-blue-600 transition-colors"
           title="Leaderboard">
@@ -68,9 +68,9 @@
               <NavigationMenuLink as-child>
                 <RouterLink to="/profile">Profile</RouterLink>
               </NavigationMenuLink>
-                <NavigationMenuLink as-child>
-                  <RouterLink to="/history" class="block p-2 hover:bg-slate-50 rounded-md text-sm text-slate-700">My History</RouterLink>
-                </NavigationMenuLink>
+              <NavigationMenuLink as-child>
+                <RouterLink to="/history">History</RouterLink>
+              </NavigationMenuLink>
               <NavigationMenuLink as-child>
                 <RouterLink to="/my-cards">Card Collection</RouterLink>
               </NavigationMenuLink>

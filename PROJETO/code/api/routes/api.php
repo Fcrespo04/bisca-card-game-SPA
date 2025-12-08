@@ -49,7 +49,6 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('/history', [HistoryController::class, 'index']);
     Route::get('/statistics/personal', [HistoryController::class, 'statisticsPersonal']);
-
 });
 
 Route::get('/metadata', function (Request $request) {

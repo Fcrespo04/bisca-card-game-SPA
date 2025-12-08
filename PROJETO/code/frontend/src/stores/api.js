@@ -116,8 +116,8 @@ export const useAPIStore = defineStore('api', () => {
   
   const equipDeck = (deckId) => axios.post(`${API_BASE_URL}/card-decks/${deckId}/equip`)
 
-  const getHistory = (page = 1) => {
-    return axios.get(`${API_BASE_URL}/history?page=${page}`)
+  const getHistory = (page = 1, search = '') => {
+    return axios.get(`${API_BASE_URL}/history?page=${page}&search=${search}`)
   }
 
   // G4: Leaderboard Global (Público)
@@ -129,7 +129,7 @@ export const useAPIStore = defineStore('api', () => {
   const getPersonalStats = () => {
     return axios.get(`${API_BASE_URL}/statistics/personal`)
   }
-  
+
 
   return {
     postLogin,
