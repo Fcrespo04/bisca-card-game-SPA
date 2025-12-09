@@ -29,8 +29,21 @@ export const useAPIStore = defineStore('api', () => {
     return axios.put(`${API_BASE_URL}/users/${user.id}`, user)
   }
 
+<<<<<<< Updated upstream
   const patchUserPhoto = (id, photo_url) => {
     return axios.patch(`${API_BASE_URL}/users/${id}/photo-url`, { photo_url })
+=======
+  const patchUserPhoto = (id, filename) => {
+    return axios.patch(`${API_BASE_URL}/users/${id}/photo-url`, {
+        photo_avatar_filename: filename
+    })
+  }
+
+  const deleteUser = (user, password) => {
+    return axios.delete(`${API_BASE_URL}/users/${user.id}`, {
+      data: { password: password }
+    })
+>>>>>>> Stashed changes
   }
 
   // GAMES
@@ -105,7 +118,15 @@ export const useAPIStore = defineStore('api', () => {
     return uploadPromise
   }
 
+<<<<<<< Updated upstream
 
+=======
+  const getCardDecks = () => axios.get(`${API_BASE_URL}/card-decks`)
+
+  const purchaseDeck = (deckId) => axios.post(`${API_BASE_URL}/card-decks/${deckId}/purchase`)
+
+  const equipDeck = (deckId) => axios.post(`${API_BASE_URL}/card-decks/${deckId}/equip`)
+>>>>>>> Stashed changes
 
   return {
     postLogin,

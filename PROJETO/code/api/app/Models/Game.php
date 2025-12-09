@@ -37,4 +37,24 @@ class Game extends Model
     {
         return $this->hasOne(User::class, 'id', 'winner_id');
     }
+<<<<<<< Updated upstream
+=======
+
+    public function loser(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'loser_user_id');
+    }
+
+    public function transactions(): HasMany
+    {
+        return $this->hasMany(CoinTransaction::class, 'game_id');
+    }
+
+    // Link to the Match (set of games)
+    public function gameMatch(): BelongsTo
+    {
+        return $this->belongsTo(GameMatch::class, 'match_id');
+    }
+
+>>>>>>> Stashed changes
 }
