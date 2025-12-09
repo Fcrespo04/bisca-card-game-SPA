@@ -1,121 +1,81 @@
+<template>
+    <div class="flex flex-col items-center justify-center min-h-[80vh] gap-8 p-4">
+
+        <div class="text-center space-y-2">
+            <h1 class="text-4xl md:text-6xl font-bold bg-gradient-to-r from-green-600 to-green-800 bg-clip-text text-transparent">
+                Bisca Game
+            </h1>
+            <p class="text-slate-500 font-medium">Escolhe o teu desafio</p>
+        </div>
+
+        <div class="flex flex-col md:flex-row gap-6 w-full max-w-4xl justify-center items-stretch">
+
+            <Card class="w-full md:w-1/2 border-slate-200 shadow-lg hover:shadow-xl transition-shadow">
+                <CardHeader>
+                    <CardTitle class="text-2xl font-bold text-center flex items-center justify-center gap-2">
+                        <span>👤</span> Single Player
+                    </CardTitle>
+                    <CardDescription class="text-center">
+                        Joga contra o Bot e treina as tuas habilidades
+                    </CardDescription>
+                </CardHeader>
+                <CardContent class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                     <Button @click="startSP(3)" variant="outline" class="h-32 flex flex-col gap-2 border-2 hover:bg-green-50 hover:border-green-600 transition-all group">
+                            <img :src="three_cards" class="w-13 h-13 object-contain" />
+                            <div class="flex flex-col items-center">
+                                <span class="font-bold text-lg">Clássico (x3)</span>
+                                <span class="text-xs text-muted-foreground">Mão de 3 cartas</span>
+                            </div>
+                     </Button>
+
+                     <Button @click="startSP(9)" variant="outline" class="h-32 flex flex-col gap-2 border-2 hover:bg-purple-50 hover:border-purple-600 transition-all group">
+                        <img :src="nine_cards" class="w-13 h-13 object-contain" />
+                        <div class="flex flex-col items-center">
+                            <span class="font-bold text-lg">Bisca de 9</span>
+                            <span class="text-xs text-muted-foreground">Mão de 9 cartas</span>
+                        </div>
+                     </Button>
+                </CardContent>
+            </Card>
+
+            <Card class="w-full md:w-1/2 border-slate-200 shadow-lg bg-blue-50/20">
+                <CardHeader>
+                    <CardTitle class="text-2xl font-bold text-center flex items-center justify-center gap-2 text-blue-600">
+                        <span>🌍</span> Multiplayer
+                    </CardTitle>
+                    <CardDescription class="text-center">
+                        Desafia outros jogadores online
+                    </CardDescription>
+                </CardHeader>
+                <CardContent class="flex items-center justify-center h-48">
+                    <Button @click="goToLobby" class="w-full h-24 text-lg bg-blue-600 hover:bg-blue-700 text-white shadow-md">
+                        Entrar no Lobby
+                    </Button>
+                </CardContent>
+            </Card>
+        </div>
+    </div>
+</template>
+
 <script setup>
-import { ref, onMounted } from 'vue'
-import { Button } from '@/components/ui/button'
-import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardHeader,
-    CardTitle
-} from '@/components/ui/card'
-
 import { useRouter } from 'vue-router'
-
 import { useGameStore } from '@/stores/game'
-import { useAPIStore } from '@/stores/api'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { inject } from 'vue'
 
 const gameStore = useGameStore()
-const apiStore = useAPIStore()
-
 const router = useRouter()
+const serverBaseURL = inject('serverBaseURL') || 'http://localhost:8000'
+const three_cards = `${serverBaseURL}/storage/icon_card/3cartas.png`
+const nine_cards = `${serverBaseURL}/storage/icon_card/9cartas.png`
 
-const selectedDifficulty = ref('')
-
-const highScores = ref([])
-
-const startGame = () => {
-  gameStore.difficulty = selectedDifficulty.value
+const startSP = (numCards) => {
+  gameStore.cardsPerHand = numCards
   router.push({ name: 'singleplayer'})
 }
 
-onMounted(async () => {
-  const response = await apiStore.getGames()
-
-  highScores.value = response.data.data
-		.map(item => ({
-			moves: item.player1_moves,
-      time: item.total_time,
-      username: item.player1?.name
-    }))
-    .sort((a, b) => a.time - b.time == 0 ? a.moves - b.moves : a.time - b.time)
-    .slice(0, 3)
-})
+const goToLobby = () => {
+  router.push({ name: 'multiplayer-lobby' })
+}
 </script>
-
-<template>
-    <div class="flex flex-row justify-center items-stretch gap-5 mt-10">
-        <Card class="w-full max-w-md">
-            <CardHeader>
-                <CardTitle class="text-3xl font-bold text-center">
-                    Single Player
-                </CardTitle>
-                <CardDescription class="text-center">
-                    Test your memory by finding matching pairs!
-                </CardDescription>
-            </CardHeader>
-            <CardContent class="space-y-6">
-                <div class="space-y-2">
-                    <label class="text-sm font-medium">Choose Difficulty</label>
-                    <div class="grid grid-cols-3 gap-2">
-                      <Button v-for="level in gameStore.difficulties" :key="level.value" size="sm"
-                           :variant="selectedDifficulty === level.value ? 'default' : 'outline'"
-                            class="flex flex-col py-3 h-16"
-                            @click="selectedDifficulty = level.value">
-                            <span class="font-semibold">{{ level.label }} </span>
-                            <span class="text-xs opacity-70">{{ level.description}}</span>
-                      </Button>
-                    </div>
-                </div>
-                <div class="space-y-2">
-                  <label class="text-sm font-medium">High Scores (local)</label>
-                  <div class="rounded-lg border bg-card text-card-foreground shadow-sm">
-                    <div class="max-h-64 overflow-y-auto">
-                      <div v-if="highScores.length === 0" class="p-6 text-center text-sm text-muted-foreground">
-                        No high scores yet. Be the first!
-                      </div>
-                      <div v-else class="divide-y">
-                        <div v-for="(score, index) in highScores" :key="index"
-                          class="flex items-center justify-between p-3 hover:bg-muted/50 transition-colors">
-                          <div class="flex items-center gap-3">
-                            <div class="flex h-8 w-8 items-center justify-center rounded-full text-xs font-bold"
-                              :class="{
-                                'bg-yellow-100 text-yellow-700 dark:bg-yellow-900 dark:text-yellow-300': index === 0,
-                                'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300': index === 1,
-                                'bg-orange-100 text-orange-700 dark:bg-orange-900 dark:text-orange-300': index === 2,
-                                'bg-muted text-muted-foreground': index > 2
-                              }">
-                                {{ index + 1 }}
-                            </div>
-                            <div>
-                              <div class="font-medium text-sm">{{ score.moves }} Moves -- {{ score.username }}</div>
-                              <div class="text-xs text-muted-foreground">{{ score.time }} /s</div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div class="flex justify-center">
-                    <Button @click="startGame" size="lg" variant="secondary" class="hover:bg-purple-500 hover:text-slate-200">
-                        Start Game
-                    </Button>
-                </div>
-            </CardContent>
-        </Card>
-        <Card class="w-full max-w-md">
-            <CardHeader>
-                <CardTitle class="text-3xl font-bold text-center">
-                    MultiPlayer
-                </CardTitle>
-                <CardDescription class="text-center">
-                    Comming Soon!!
-                </CardDescription>
-            </CardHeader>
-            <CardContent class="space-y-6">
-
-            </CardContent>
-        </Card>
-    </div>
-</template>
