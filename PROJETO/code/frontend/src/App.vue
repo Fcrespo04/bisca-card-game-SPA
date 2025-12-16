@@ -29,6 +29,15 @@
         </RouterLink>
       </div>
     </div>
+    <div class="align-middle text-xl flex items-center gap-4">
+      <div class="flex items-center gap-3 ...">
+        <RouterLink to="/leaderboard" class="flex items-center gap-1 hover:text-blue-600 transition-colors"
+          title="Leaderboard">
+          <span>🏆</span>
+          <span class="text-xs bg-yellow-100 text-yellow-700 px-1.5 py-0.5 rounded ml-1">Leaderboard</span>
+        </RouterLink>
+      </div>
+    </div>
 
     <NavigationMenu>
       <NavigationMenuList class="justify-around gap-20">
@@ -74,6 +83,12 @@
             <li>
               <NavigationMenuLink as-child>
                 <RouterLink to="/profile">Profile</RouterLink>
+              </NavigationMenuLink>
+              <NavigationMenuLink as-child>
+                <RouterLink to="/history">History</RouterLink>
+              </NavigationMenuLink>
+              <NavigationMenuLink as-child v-if="authStore.isLoggedIn && authStore.currentUser?.type === 'A'">
+                <RouterLink to="/users">Users</RouterLink>
               </NavigationMenuLink>
 
               <NavigationMenuLink as-child v-if="authStore.currentUser.type !== 'A'">

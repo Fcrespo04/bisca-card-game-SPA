@@ -14,6 +14,9 @@ import CardPacksShop from '@/pages/transactions/CardPackShop.vue'
 import MyCardCollection from '@/pages/profile/MyCardCollection.vue'
 import { toast } from 'vue-sonner'
 import Statistics from '@/pages/Statistics/Statistics.vue'
+import HistoryPage from '@/pages/history/HistoryPage.vue'
+import LeaderboardPage from '@/pages/history/LeaderBoardPage.vue'
+import UsersList from '@/pages/history/UsersList.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -87,6 +90,23 @@ const router = createRouter({
       path: '/my-cards',
       name: 'my-card-collection',
       component: MyCardCollection,
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/history',
+      name: 'history',
+      component: HistoryPage,
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/leaderboard',
+      name: 'leaderboard',
+      component: LeaderboardPage,
+    },
+    {
+      path: '/users',
+      name: 'users',
+      component: UsersList,
       meta: { requiresAuth: true },
     },
   ],

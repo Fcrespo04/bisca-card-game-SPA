@@ -116,6 +116,57 @@ export const useAPIStore = defineStore('api', () => {
   
   const equipDeck = (deckId) => axios.post(`${API_BASE_URL}/card-decks/${deckId}/equip`)
 
+ const getHistory = (page = 1, search = '') => {
+    return axios.get(`${API_BASE_URL}/history?page=${page}&search=${search}`)
+  }
+
+  // G4: Leaderboard Global (Público)
+  const getGlobalLeaderboard = () => {
+    return axios.get(`${API_BASE_URL}/leaderboard/global`)
+  }
+
+  // G4: Estatísticas Pessoais (Privado)
+  const getPersonalStats = () => {
+    return axios.get(`${API_BASE_URL}/statistics/personal`)
+  }
+
+  const getUsersList = (page = 1, filter = 'all') => { // ⬅️ Adicionar 'filter'
+    // Envia 'page' E 'filter' na query string
+    return axios.get(`${API_BASE_URL}/users/list`, {
+        params: {
+            page: page,
+            filter: filter // ⬅️ NOVO: Envia o filtro
+        }
+    });
+}
+
+  const getPlayerStats = (userId) => {
+    // Rota: GET /api/admin/stats/123
+    return axios.get(`${API_BASE_URL}/admin/stats/${userId}`);
+  }
+
+  const toggleUserBlock = (userId) => {
+    return axios.patch(`${API_BASE_URL}/admin/users/${userId}/block`);
+  };
+
+  const removeUserAccount = (userId) => {
+    return axios.delete(`${API_BASE_URL}/admin/users/${userId}`);
+  };
+
+  const createNewAdmin = (formData) => {
+    return axios.post(`${API_BASE_URL}/admin/create-admin`, formData);
+  };
+
+  const getUsersListAdmin = (page = 1, filter = 'all') => { // ⬅️ Adicionar 'filter'
+    return axios.get(`${API_BASE_URL}/admin/users/list`, {
+        params: { 
+            page: page, 
+            filter: filter // ⬅️ Envia o filtro
+        }
+    });
+};
+  
+
   return {
     postLogin,
     postLogout,
@@ -133,5 +184,14 @@ export const useAPIStore = defineStore('api', () => {
     getCardDecks,
     purchaseDeck,
     equipDeck,
+    getHistory,
+    getGlobalLeaderboard,
+    getPersonalStats,
+    getUsersList,
+    getPlayerStats,
+    toggleUserBlock,
+    removeUserAccount,
+    createNewAdmin,
+    getUsersListAdmin
   }
 })
