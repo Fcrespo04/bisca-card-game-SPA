@@ -13,6 +13,7 @@ import ShopPage from '@/pages/transactions/ShopPage.vue'
 import CardPacksShop from '@/pages/transactions/CardPackShop.vue'
 import MyCardCollection from '@/pages/profile/MyCardCollection.vue'
 import { toast } from 'vue-sonner'
+import Statistics from '@/pages/Statistics/Statistics.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -48,6 +49,11 @@ const router = createRouter({
       path: '/about',
       name: 'about',
       component: AboutPage,
+    },
+    {
+      path: '/statistics',
+      name: 'statistics',
+      component: Statistics
     },
     {
       path: '/login',

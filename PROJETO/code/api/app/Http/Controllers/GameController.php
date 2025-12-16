@@ -14,7 +14,8 @@ class GameController extends Controller
      */
     public function index()
     {
-        return GameResource::collection(Game::all());
+        // Em vez de carregar TUDO (all), carregamos páginas de 10 jogos
+        return GameResource::collection(Game::paginate(10));
     }
 
     /**
