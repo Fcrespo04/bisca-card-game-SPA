@@ -1,22 +1,22 @@
 <template>
   <Toaster richColors />
   <nav class="max-w-full p-5 flex flex-row justify-between align-middle">
-    
+
     <div class="align-middle text-xl flex items-center gap-4">
       <RouterLink to="/"> Bisca Game </RouterLink>
-      
+
       <div v-if="authStore.currentUser" class="flex items-center gap-3 text-sm bg-slate-100 px-3 py-1 rounded-full border border-slate-200">
-        
+
         <span class="font-medium text-slate-700">
           {{ authStore.currentUser.nickname || authStore.currentUser.name }}
         </span>
-        
+
         <span v-if="authStore.currentUser.type === 'A'" class="bg-red-100 text-red-700 text-xs px-2 py-0.5 rounded font-bold">
             ADMIN
         </span>
 
         <span v-if="authStore.currentUser.type !== 'A'" class="text-slate-300">|</span>
-        
+
         <RouterLink v-if="authStore.currentUser.type !== 'A'" to="/transactions" class="flex items-center gap-1 hover:text-blue-600 transition-colors" title="Buy Coins">
           <span class="font-bold text-yellow-600">{{ authStore.currentUser.coins_balance }}</span>
           <span>💰</span>
@@ -32,6 +32,7 @@
 
     <NavigationMenu>
       <NavigationMenuList class="justify-around gap-20">
+
         
         <NavigationMenuItem>
           <NavigationMenuLink as-child>
@@ -74,11 +75,11 @@
               <NavigationMenuLink as-child>
                 <RouterLink to="/profile">Profile</RouterLink>
               </NavigationMenuLink>
-              
+
               <NavigationMenuLink as-child v-if="authStore.currentUser.type !== 'A'">
                 <RouterLink to="/my-cards">Card Collection</RouterLink>
               </NavigationMenuLink>
-              
+
               <NavigationMenuLink as-child>
                 <a @click.prevent="logout" class="cursor-pointer">Logout</a>
               </NavigationMenuLink>
