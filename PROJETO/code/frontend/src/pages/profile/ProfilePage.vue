@@ -122,6 +122,10 @@ const authStore = useAuthStore()
 const router = useRouter()
 const serverBaseURL = inject("serverBaseURL")
 
+// constants used in file validation
+const MAX_FILE_SIZE = 2 * 1024 * 1024; 
+const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/jpg', 'image/gif'];
+
 // --- State ---
 const formData = ref({
     name: '',
@@ -153,14 +157,40 @@ const { files, open, reset } = useFileDialog({
 const uploadPhoto = async () => {
     if (!files.value || files.value.length === 0) return
     
+   const file = files.value[0]
+
+    // Validate File Type
+    if (!ALLOWED_TYPES.includes(file.type)) {
+        toast.error("Invalid file type. Please upload a JPEG, PNG, or GIF.")
+        reset() // Clear the invalid selection
+        return
+    }
+
+    // Validate File Size
+    if (file.size > MAX_FILE_SIZE) {
+        toast.error("File is too large. Max size is 2MB.")
+        reset() // Clear the invalid selection
+        return
+    }
+
+    // Attempt Upload
     try {
-        await authStore.updateUserPhoto(files.value[0])
+        await authStore.updateUserPhoto(file)
         
         toast.success("Profile photo updated successfully")
         reset()
     } catch (error) {
         console.error('Failed to upload photo:', error)
-        toast.error("Failed to upload photo.")
+        
+        // If the API sends a specific validation message (like 422), show it.
+        if (error.response && error.response.data) {
+            // Laravel often puts the main message in 'message'
+            // Or detailed field errors in 'errors'
+            const apiMessage = error.response.data.message || "Upload failed."
+            toast.error(`Error: ${apiMessage}`)
+        } else {
+            toast.error("Failed to upload photo. Server error.")
+        }
     }
 }
 
