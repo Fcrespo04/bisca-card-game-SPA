@@ -10,6 +10,62 @@ use Illuminate\Support\Facades\DB; // Necessário para estatísticas
 class AdminController extends Controller
 {
 
+    public function getUsersListAdmin(Request $request) // Ou listAllUsers, use o nome que você definiu para a rota
+    {
+        // 1. Autorização (Assumindo que está num middleware ou check)
+        if ($request->user()->type !== 'A') {
+            return response()->json(['error' => 'Acesso negado.'], 403);
+        }
+
+        // 2. Obter Parâmetros
+        $page = $request->get('page', 1);
+        $filter = $request->get('filter', 'all'); // ⬅️ Captura o filtro do Frontend
+
+        // 3. Definição da Query Base
+        $query = User::select(
+            'id',
+            'name',
+            'email',
+            'nickname',
+            'blocked',
+            'photo_avatar_filename',
+            'coins_balance',
+            'created_at'
+        );
+
+        // 4. Lógica de Filtragem (ADICIONADO)
+        switch ($filter) {
+            case 'active':
+                // Ativos: Não bloqueados E Não soft-deleted
+                $query->where('blocked', false)
+                    ->whereNull('deleted_at');
+                break;
+
+            case 'blocked':
+                // Bloqueados: Bloqueados (blocked=true) E Não soft-deleted
+                $query->where('blocked', true)
+                    ->whereNull('deleted_at');
+                break;
+
+            case 'deleted':
+                // Desativados (Removidos): Apenas soft-deleted
+                $query->onlyTrashed();
+                break;
+
+            case 'all':
+            default:
+                // Todos: Inclui ativos, bloqueados, e soft-deleted (usa withTrashed)
+                $query->withTrashed();
+                break;
+        }
+
+        // 5. Ordenação e Paginação
+        $Users = $query->orderBy('id', 'asc')->paginate(10, ['*'], 'page', $page);
+
+        // 6. Devolver a resposta de paginação
+        return response()->json($Users);
+    }
+
     public function toggleBlock(Request $request, User $user)
     {
         if ($request->user()->type !== 'A') {
@@ -73,4 +129,6 @@ class AdminController extends Controller
 
         return response()->json(['message' => 'Novo Administrador criado com sucesso!']);
     }
+
+
 }

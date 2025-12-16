@@ -264,19 +264,45 @@ public function statisticsPersonal(Request $request)
 
 public function listAllUsers(Request $request)
 {
-    // 1. Definição da Query
-    $query = User::select('id', 'name', 'email', 'nickname', 'blocked', 'photo_avatar_filename', 'coins_balance', 'created_at')
-                  ->orderBy('id', 'asc');
+    // 1. Definição da Query Base e Colunas
+    $query = User::select(
+        'id', 'name', 'email', 'nickname', 'blocked', 'photo_avatar_filename', 'coins_balance', 'created_at', 'deleted_at'
+    );
     
-    // Obter o número da página do request
+    // Obter Parâmetros
     $page = $request->query('page', 1);
+    $filter = $request->query('filter', 'all'); // ⬅️ NOVO: Captura o filtro
 
-    // 2. Executar Paginação (10 em 10)
-    $Users = $query->paginate(10, ['*'], 'page', $page);
+    // 2. Lógica de Filtragem (ADICIONADA)
+    switch ($filter) {
+        case 'active':
+            // Ativos: Não bloqueados E Não soft-deleted
+            $query->where('blocked', false)
+                  ->whereNull('deleted_at'); 
+            break;
 
-    // 3. Devolver o Objeto de Paginação Completo
-    // A estrutura de paginação (current_page, last_page, data, etc.) é devolvida automaticamente
-    // pelo método ->paginate(). Não precisamos de a aninhar em 'users' no retorno.
+        case 'blocked':
+            // Bloqueados: Bloqueados (blocked=true) E Não soft-deleted
+            $query->where('blocked', true)
+                  ->whereNull('deleted_at');
+            break;
+
+        case 'deleted':
+            // Desativados (Removidos): Apenas soft-deleted
+            $query->onlyTrashed();
+            break;
+        
+        case 'all':
+        default:
+            // Todos: Inclui ativos, bloqueados, e soft-deleted
+            $query->withTrashed();
+            break;
+    }
+
+    // 3. Executar Paginação (10 em 10)
+    $Users = $query->orderBy('id', 'asc')->paginate(10, ['*'], 'page', $page);
+
+    // 4. Devolver o Objeto de Paginação Completo
     return response()->json($Users);
 }
 

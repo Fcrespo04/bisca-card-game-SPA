@@ -20,6 +20,7 @@ Route::apiResource('games', GameController::class)->only(['index', 'show', 'stor
 
 Route::get('/leaderboard/global', [HistoryController::class, 'leaderboardGlobal']);
 Route::get('/users/list', [HistoryController::class, 'listAllUsers']);
+Route::get('/admin/users/list', [HistoryController::class, 'getUsersListAdmin']); // ADICIONADO
 
 
 Route::middleware('auth:sanctum')->group(function () {

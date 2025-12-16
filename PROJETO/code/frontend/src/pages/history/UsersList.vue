@@ -6,10 +6,35 @@
             <p class="text-slate-600 text-lg">Consulta de todos os utilizadores registados na plataforma.</p>
         </div>
 
-        <div class="flex items-right gap-2 w-full md:w-auto">
-            <Button variant="default" @click="showCreateAdminModal = true">
-                ➕ Adicionar Novo User
-            </Button>
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+
+            <div class="flex gap-2 p-1 bg-slate-100 rounded-lg shadow-inner text-sm flex-wrap">
+                <Button size="sm" :variant="currentFilter === 'all' ? 'default' : 'ghost'" @click="setFilter('all')">
+                    🌐 Todos ({{ pagination.total || 0 }})
+                </Button>
+
+                <Button size="sm" :variant="currentFilter === 'active' ? 'default' : 'ghost'"
+                    @click="setFilter('active')">
+                    ✅ Ativos
+                </Button>
+
+                <Button size="sm" :variant="currentFilter === 'blocked' ? 'default' : 'ghost'"
+                    @click="setFilter('blocked')">
+                    🛑 Bloqueados
+                </Button>
+
+                <Button size="sm" :variant="currentFilter === 'deleted' ? 'default' : 'ghost'"
+                    @click="setFilter('deleted')">
+                    🗑️ Desativados
+                </Button>
+            </div>
+
+            <div class="flex items-center gap-2 w-full md:w-auto">
+                <Button variant="default" @click="showCreateAdminModal = true">
+                    ➕ Adicionar Novo User
+                </Button>
+            </div>
+
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
@@ -39,7 +64,7 @@
                             </tr>
                             <tr v-else-if="users.length === 0">
                                 <td colspan="4" class="px-4 py-8 text-center text-gray-400 italic">
-                                    Ainda sem registos...
+                                    Ainda sem registos ou nenhum utilizador corresponde ao filtro "{{ currentFilter }}".
                                 </td>
                             </tr>
 
@@ -161,12 +186,19 @@
                                                         </div>
                                                     </div>
 
-                                                    <div class="p-2 rounded-lg shadow-sm"
-                                                        :class="user.blocked ? 'bg-red-50 border border-red-200' : 'bg-green-50 border border-green-200'">
+                                                    <div class="p-2 rounded-lg shadow-sm" :class="user.deleted_at
+                                                        ? 'bg-orange-50 border border-orange-200'
+                                                        : user.blocked ? 'bg-red-50 border border-red-200' : 'bg-green-50 border border-green-200'">
+
                                                         <div class="text-xs text-gray-600 uppercase">Estado</div>
-                                                        <div class="font-bold"
-                                                            :class="user.blocked ? 'text-red-700' : 'text-green-700'">
-                                                            {{ user.blocked ? 'BLOQUEADO' : 'ATIVO' }}
+
+                                                        <div class="font-bold" :class="user.deleted_at
+                                                            ? 'text-orange-700'
+                                                            : user.blocked ? 'text-red-700' : 'text-green-700'">
+
+                                                            {{ user.deleted_at ? 'DESATIVADO' : user.blocked ?
+                                                            'BLOQUEADO' : 'ATIVO' }}
+
                                                         </div>
                                                     </div>
 
@@ -256,11 +288,11 @@ const users = ref([]) // Este será o array de dados (users.data)
 const pagination = ref({})
 const isLoading = ref(true)
 const expandedUsers = ref(new Set())
-// Não precisamos de 'detailsLoadingId' se usarmos um campo no próprio objeto 'user'.
+const currentFilter = ref('all') // ⬅️ NOVO: Estado inicial do filtro
 
 // 1. Lógica de Expansão (toggleDetails)
 const toggleDetails = async (id) => {
-    // Encontrar o objeto do utilizador no array
+    // ... (Mantém o código existente para expansão)
     const targetUser = users.value.find(u => u.id === id);
 
     if (expandedUsers.value.has(id)) {
@@ -270,19 +302,14 @@ const toggleDetails = async (id) => {
     }
     expandedUsers.value = new Set(expandedUsers.value)
 
-    // 2. Carregar Estatísticas Pessoais do Jogador (se não existirem)
     if (targetUser && !targetUser.detailedStats) {
-        // Adicionar estado de loading temporário ao objeto do utilizador
         targetUser.statsLoading = true;
-
         try {
-            // Chamada à API (Assumindo que apiStore tem getPlayerStats(id))
             const response = await apiStore.getPlayerStats(id);
-            // Armazena as estatísticas no campo 'detailedStats'
             targetUser.detailedStats = response.data;
         } catch (e) {
             console.error(`Erro ao carregar estatísticas para o utilizador ${id}:`, e);
-            targetUser.detailedStats = {}; // Define um objeto vazio para indicar falha
+            targetUser.detailedStats = {};
         } finally {
             targetUser.statsLoading = false;
         }
@@ -293,15 +320,24 @@ const isExpanded = (id) => {
     return expandedUsers.value.has(id)
 }
 
+// 💡 NOVO: Função para alterar o filtro e recarregar
+const setFilter = (filter) => {
+    currentFilter.value = filter;
+    loadUsers(1); // Sempre volta para a primeira página com o novo filtro
+}
+
+
 // 3. Função de Carregamento Principal (loadUsers)
 const loadUsers = async (page = 1) => {
     isLoading.value = true
+    expandedUsers.value = new Set() // Limpar detalhes expandidos ao recarregar
+
     try {
-        // Assume que a função getUsersList aceita 'page'
-        const res = await apiStore.getUsersList(page)
+        // 💡 ATUALIZADO: Passa o filtro atual para a API
+        const res = await apiStore.getUsersList(page, currentFilter.value)
 
         if (res.data) {
-            // Atribuir o array de utilizadores
+            // Se a API retornar um objeto de paginação (Laravel), usa data dentro
             users.value = res.data.data
 
             // Atribuir os metadados de paginação
@@ -320,22 +356,20 @@ const loadUsers = async (page = 1) => {
 }
 
 const toggleBlock = async (userId) => {
+    // ... (Mantém o seu código toggleBlock corrigido)
     if (!confirm('Tem certeza que deseja alterar o estado de bloqueio deste utilizador?')) {
         return;
     }
 
     try {
         const response = await apiStore.toggleUserBlock(userId);
-        
-        // 1. CORREÇÃO: Usar findIndex para obter o índice numérico
-        const userIndex = users.value.findIndex(u => u.id === userId); 
-        
-        // 2. CORREÇÃO: Verificar se o índice é válido (diferente de -1)
+
+        const userIndex = users.value.findIndex(u => u.id === userId);
+
         if (userIndex !== -1) {
-            // 3. CORREÇÃO: Aceder ao valor 'blocked' da resposta via response.data
-            users.value[userIndex].blocked = response.data.blocked; 
+            users.value[userIndex].blocked = response.data.blocked;
         }
-        
+
         alert(`Estado de bloqueio alterado para: ${response.data.blocked ? 'BLOQUEADO' : 'ATIVO'}`);
     } catch (error) {
         console.error('Erro ao alternar bloqueio:', error);
@@ -343,40 +377,31 @@ const toggleBlock = async (userId) => {
     }
 };
 
-// 2. 🗑️ Função para Remover Conta
+// 2. 🗑️ Função para Desativar (Soft Delete)
 const confirmRemoveUser = async (userId, nickname) => {
-    // ⚠️ Mudei a mensagem para refletir a ação de desativação/soft-delete
     if (!confirm(`AVISO: Tem certeza que deseja desativar (soft-delete) a conta de ${nickname}?
-    
     (A conta será removida da lista, mas os dados serão preservados.)`)) {
         return;
     }
 
     try {
-        // Chamada à API: DELETE /api/admin/users/{userId}
         const response = await apiStore.removeUserAccount(userId);
-        
-        // 💡 Remoção Local com splice (Rápido e Eficiente)
-        
-        // Encontra o índice do utilizador no array users.value
-        // NOTA: users.value é um array (pois loadUsers atribui res.data.data)
+
+        // Remoção Local com splice para desaparecer da lista
         const userIndex = users.value.findIndex(u => u.id === userId);
-        
+
         if (userIndex !== -1) {
-            // Remove 1 elemento a partir da posição userIndex
             users.value.splice(userIndex, 1);
-            
-            // Opcional: Atualizar o total da paginação
             if (pagination.value.total) {
                 pagination.value.total--;
             }
         }
-        
+
         alert(`Sucesso! Conta de ${nickname} desativada. ${response.data.message}`);
-        
+
     } catch (error) {
-        console.error('Erro ao desativar utilizador:', error.response?.data || error.message);
         const errorMessage = error.response?.data?.error || 'Falha na comunicação com o servidor. Tente novamente.';
+        console.error('Erro ao desativar utilizador:', error);
         alert(`Falha ao desativar: ${errorMessage}`);
     }
 };
@@ -389,6 +414,6 @@ const changePage = (page) => {
 }
 
 onMounted(() => {
-    loadUsers(1) // Carregar a primeira página
+    loadUsers(1) // Carregar a primeira página com o filtro 'all'
 })
 </script>
