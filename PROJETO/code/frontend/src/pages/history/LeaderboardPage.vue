@@ -46,7 +46,7 @@
           </div>
           <div class="bg-white p-4 rounded-xl shadow-sm border border-yellow-100">
             <div class="text-2xl font-bold text-yellow-600 flex items-center justify-center gap-1">
-              {{personalStats.total_score}}
+              {{ personalStats.total_score }}
             </div>
             <div class="text-xs text-slate-500 uppercase tracking-wide mt-1">Score Total</div>
           </div>
@@ -55,7 +55,7 @@
       </CardContent>
     </Card>
 
-    
+
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
 
@@ -70,10 +70,10 @@
           class="p-4 text-center bg-yellow-50 border-y border-yellow-200">
           <span class="text-xs font-semibold text-slate-600 uppercase block mb-1">A Sua Posição</span>
           <span class="text-2xl font-extrabold text-yellow-800">
-            #{{ leaderboard.personal_match_rank.rank }} 
+            #{{ leaderboard.personal_match_rank.rank }}
           </span>
         </div>
-        
+
         <CardContent class="p-0">
           <table class="w-full text-sm text-left">
             <thead class="bg-slate-50 text-xs uppercase text-slate-500">
@@ -101,9 +101,12 @@
                 </td>
                 <td class="px-4 py-3 flex items-center gap-3">
                   <Avatar class="h-8 w-8 border border-slate-200">
+
                     <AvatarImage v-if="player.photo_avatar_filename"
                       :src="`${serverBaseURL}/storage/photos_avatars/${player.photo_avatar_filename}`" />
-                    <AvatarFallback>{{ player.nickname?.charAt(0).toUpperCase() }}</AvatarFallback>
+
+                    <AvatarImage v-else :src="`${serverBaseURL}/storage/photos_avatars/anonymous.png`" />
+
                   </Avatar>
                   <span class="font-medium text-slate-800">{{ player.nickname }}</span>
                 </td>
@@ -111,8 +114,8 @@
                   {{ player.total_wins }}
                 </td>
                 <td class="px-4 py-3 text-right font-medium text-slate-500">
-                {{ player.total_score }} 
-            </td>
+                  {{ player.total_score }}
+                </td>
               </tr>
             </tbody>
           </table>
@@ -153,9 +156,12 @@
                 </td>
                 <td class="px-4 py-3 flex items-center gap-3">
                   <Avatar class="h-8 w-8 border border-slate-200">
+
                     <AvatarImage v-if="player.photo_avatar_filename"
                       :src="`${serverBaseURL}/storage/photos_avatars/${player.photo_avatar_filename}`" />
-                    <AvatarFallback>{{ player.nickname?.charAt(0).toUpperCase() }}</AvatarFallback>
+
+                    <AvatarImage v-else :src="`${serverBaseURL}/storage/photos_avatars/anonymous.png`" />
+
                   </Avatar>
                   <span class="font-medium text-slate-800">{{ player.nickname }}</span>
                 </td>
@@ -163,8 +169,8 @@
                   {{ player.total_wins }}
                 </td>
                 <td class="px-4 py-3 text-right font-medium text-slate-500">
-                {{ player.total_score }} 
-            </td>
+                  {{ player.total_score }}
+                </td>
               </tr>
             </tbody>
           </table>
@@ -204,9 +210,12 @@
                 </td>
                 <td class="px-4 py-3 flex items-center gap-3">
                   <Avatar class="h-8 w-8 border border-slate-200">
+
                     <AvatarImage v-if="player.photo_avatar_filename"
                       :src="`${serverBaseURL}/storage/photos_avatars/${player.photo_avatar_filename}`" />
-                    <AvatarFallback>{{ player.nickname?.charAt(0).toUpperCase() }}</AvatarFallback>
+
+                    <AvatarImage v-else :src="`${serverBaseURL}/storage/photos_avatars/anonymous.png`" />
+
                   </Avatar>
                   <span class="font-medium text-slate-800">{{ player.nickname }}</span>
                 </td>
@@ -228,14 +237,14 @@ import { ref, onMounted, inject } from 'vue'
 import { useAPIStore } from '@/stores/api'
 import { useAuthStore } from '@/stores/auth'
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card'
-import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
+import { Avatar, AvatarImage } from '@/components/ui/avatar'
 
 const apiStore = useAPIStore()
 const authStore = useAuthStore()
 const serverBaseURL = inject('serverBaseURL')
 
 // Inicializa com arrays vazios para não dar erro no v-for
-const leaderboard = ref({ top_matches: [], top_games: [], top_scores: []})
+const leaderboard = ref({ top_matches: [], top_games: [], top_scores: [] })
 const personalStats = ref(null)
 
 onMounted(async () => {

@@ -97,16 +97,17 @@
                       class="inline-flex items-center gap-3 bg-slate-100 px-3 py-1 rounded-lg border border-slate-200">
 
                       <div class="flex gap-1" :title="isAdmin ? 'Player 1' : 'Tu'">
-                        <span v-for="n in (match.user_marks_won || 0)" :key="'u' + n"
-                          class="w-1 h-4 bg-blue-600 rounded-sm"></span>
+                        <span v-for="n in (match.user_marks_won || 0)" :key="'u' + n" 
+                        :class="['w-1 h-4 rounded-sm', isAdmin ? 'bg-gray-500' : 'bg-blue-600']">
+                        </span>
                         <span v-if="!match.user_marks_won" class="text-gray-400 font-mono text-xs">0</span>
                       </div>
 
                       <span class="text-slate-400">/</span>
 
                       <div class="flex gap-1" :title="isAdmin ? 'Player 2' : 'Adversário'">
-                        <span v-for="n in (match.opponent_marks_won || 0)" :key="'o' + n"
-                          class="w-1 h-4 bg-gray-500 rounded-sm"></span>
+                        <span v-for="n in (match.opponent_marks_won || 0)" :key="'o' + n" :class="['w-1 h-4 rounded-sm', 'bg-gray-500' ]"> 
+                        </span>
                         <span v-if="!match.opponent_marks_won" class="text-gray-400 font-mono text-xs">0</span>
                       </div>
                     </div>

@@ -37,8 +37,8 @@ export const useAPIStore = defineStore('api', () => {
   }
 
   const patchUserPhoto = (id, filename) => {
-    return axios.patch(`${API_BASE_URL}/users/${id}/photo-url`, { 
-        photo_avatar_filename: filename 
+    return axios.patch(`${API_BASE_URL}/users/${id}/photo-url`, {
+      photo_avatar_filename: filename
     })
   }
 
@@ -111,9 +111,9 @@ export const useAPIStore = defineStore('api', () => {
   }
 
   const getCardDecks = () => axios.get(`${API_BASE_URL}/card-decks`)
-  
+
   const purchaseDeck = (deckId) => axios.post(`${API_BASE_URL}/card-decks/${deckId}/purchase`)
-  
+
   const equipDeck = (deckId) => axios.post(`${API_BASE_URL}/card-decks/${deckId}/equip`)
 
   const getHistory = (page = 1, search = '') => {
@@ -133,11 +133,23 @@ export const useAPIStore = defineStore('api', () => {
   const getUsersList = (page = 1) => {
     return axios.get(`${API_BASE_URL}/users/list?page=${page}`)
   }
-  
+
   const getPlayerStats = (userId) => {
-        // Rota: GET /api/admin/stats/123
-        return axios.get(`${API_BASE_URL}/admin/stats/${userId}`);
-    }
+    // Rota: GET /api/admin/stats/123
+    return axios.get(`${API_BASE_URL}/admin/stats/${userId}`);
+  }
+
+  const toggleUserBlock = (userId) => {
+    return axios.patch(`${API_BASE_URL}/admin/users/${userId}/block`);
+  };
+
+  const removeUserAccount = (userId) => {
+    return axios.delete(`${API_BASE_URL}/admin/users/${userId}`);
+  };
+
+  const createNewAdmin = (formData) => {
+    return axios.post(`${API_BASE_URL}/admin/create-admin`, formData);
+  };
 
 
   return {
@@ -161,6 +173,9 @@ export const useAPIStore = defineStore('api', () => {
     getGlobalLeaderboard,
     getPersonalStats,
     getUsersList,
-    getPlayerStats
+    getPlayerStats,
+    toggleUserBlock,
+    removeUserAccount,
+    createNewAdmin,
   }
 })

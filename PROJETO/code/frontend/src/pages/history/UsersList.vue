@@ -6,6 +6,12 @@
             <p class="text-slate-600 text-lg">Consulta de todos os utilizadores registados na plataforma.</p>
         </div>
 
+        <div class="flex items-right gap-2 w-full md:w-auto">
+            <Button variant="default" @click="showCreateAdminModal = true">
+                ➕ Adicionar Novo User
+            </Button>
+        </div>
+
         <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
 
             <Card class="h-full border-t-4 border-t-yellow-500 shadow-md md:col-span-3">
@@ -46,12 +52,14 @@
                                     <td class="px-4 py-3 text-center font-bold text-slate-600">{{ user.id }}</td>
 
                                     <td class="px-4 py-3 flex items-center gap-3">
+
                                         <Avatar class="h-8 w-8 border border-slate-200">
                                             <AvatarImage v-if="user.photo_avatar_filename"
                                                 :src="`${serverBaseURL}/storage/photos_avatars/${user.photo_avatar_filename}`" />
-                                            <AvatarFallback v-else>{{ user.nickname?.charAt(0).toUpperCase() }}
-                                            </AvatarFallback>
+                                            <AvatarImage v-else
+                                                :src="`${serverBaseURL}/storage/photos_avatars/anonymous.png`" />
                                         </Avatar>
+
                                         <span class="font-medium text-slate-800">{{ user.nickname }}</span>
                                     </td>
 
@@ -141,7 +149,9 @@
                                                     <div
                                                         class="p-2 bg-gray-50 border border-gray-200 rounded-lg shadow-sm">
                                                         <div class="text-xs text-gray-600 uppercase">Email</div>
-                                                        <div class="font-medium text-slate-800 truncate">{{ user.email}}</div>
+                                                        <div class="font-medium text-slate-800 truncate">{{ user.email
+                                                        }}
+                                                        </div>
                                                     </div>
 
                                                     <div
@@ -162,9 +172,36 @@
 
                                                     <div
                                                         class="md:col-span-5 mt-2 p-2 bg-gray-50 border border-slate-200 rounded-lg shadow-sm text-xs">
-                                                        <span class="font-semibold text-slate-700">Data de
-                                                            Registo:</span>
-                                                        {{ new Date(user.created_at).toLocaleString() }}
+
+                                                        <div class="flex justify-between items-center w-full">
+
+                                                            <div>
+                                                                <span class="font-semibold text-slate-700">Data de
+                                                                    Registo:</span>
+                                                                {{ new Date(user.created_at).toLocaleString() }}
+                                                            </div>
+
+                                                            <div v-if="authStore.currentUser?.id !== user.id"
+                                                                class="flex gap-2 items-center flex-shrink-0">
+
+                                                                <Button size="sm" @click.stop="toggleBlock(user.id)"
+                                                                    :variant="user.blocked ? 'success' : 'destructive'">
+                                                                    {{ user.blocked ? '✅ Desbloquear' : '🛑 Bloquear' }}
+                                                                </Button>
+
+                                                                <Button size="sm"
+                                                                    @click.stop="confirmRemoveUser(user.id, user.nickname)"
+                                                                    variant="outline">
+                                                                    🗑️ Remover Conta
+                                                                </Button>
+                                                            </div>
+
+                                                            <span v-else
+                                                                class="text-xs text-red-600 font-semibold md:text-right w-full md:w-auto">
+                                                                ⚠️ Não pode gerir a sua própria conta.
+                                                            </span>
+
+                                                        </div>
                                                     </div>
 
                                                 </div>
@@ -207,7 +244,7 @@ import { ref, onMounted, inject } from 'vue'
 import { useAPIStore } from '@/stores/api'
 import { useAuthStore } from '@/stores/auth'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
-import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
+import { Avatar, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 
 const apiStore = useAPIStore()
@@ -226,12 +263,12 @@ const toggleDetails = async (id) => {
     // Encontrar o objeto do utilizador no array
     const targetUser = users.value.find(u => u.id === id);
 
-  if (expandedUsers.value.has(id)) {
-    expandedUsers.value.delete(id)
-  } else {
-    expandedUsers.value.add(id) 
-  }
-  expandedUsers.value = new Set(expandedUsers.value)
+    if (expandedUsers.value.has(id)) {
+        expandedUsers.value.delete(id)
+    } else {
+        expandedUsers.value.add(id)
+    }
+    expandedUsers.value = new Set(expandedUsers.value)
 
     // 2. Carregar Estatísticas Pessoais do Jogador (se não existirem)
     if (targetUser && !targetUser.detailedStats) {
@@ -253,7 +290,7 @@ const toggleDetails = async (id) => {
 }
 
 const isExpanded = (id) => {
-  return expandedUsers.value.has(id)
+    return expandedUsers.value.has(id)
 }
 
 // 3. Função de Carregamento Principal (loadUsers)
@@ -281,6 +318,68 @@ const loadUsers = async (page = 1) => {
         isLoading.value = false
     }
 }
+
+const toggleBlock = async (userId) => {
+    if (!confirm('Tem certeza que deseja alterar o estado de bloqueio deste utilizador?')) {
+        return;
+    }
+
+    try {
+        const response = await apiStore.toggleUserBlock(userId);
+        
+        // 1. CORREÇÃO: Usar findIndex para obter o índice numérico
+        const userIndex = users.value.findIndex(u => u.id === userId); 
+        
+        // 2. CORREÇÃO: Verificar se o índice é válido (diferente de -1)
+        if (userIndex !== -1) {
+            // 3. CORREÇÃO: Aceder ao valor 'blocked' da resposta via response.data
+            users.value[userIndex].blocked = response.data.blocked; 
+        }
+        
+        alert(`Estado de bloqueio alterado para: ${response.data.blocked ? 'BLOQUEADO' : 'ATIVO'}`);
+    } catch (error) {
+        console.error('Erro ao alternar bloqueio:', error);
+        alert('Falha ao alterar o estado de bloqueio. Verifique o console.');
+    }
+};
+
+// 2. 🗑️ Função para Remover Conta
+const confirmRemoveUser = async (userId, nickname) => {
+    // ⚠️ Mudei a mensagem para refletir a ação de desativação/soft-delete
+    if (!confirm(`AVISO: Tem certeza que deseja desativar (soft-delete) a conta de ${nickname}?
+    
+    (A conta será removida da lista, mas os dados serão preservados.)`)) {
+        return;
+    }
+
+    try {
+        // Chamada à API: DELETE /api/admin/users/{userId}
+        const response = await apiStore.removeUserAccount(userId);
+        
+        // 💡 Remoção Local com splice (Rápido e Eficiente)
+        
+        // Encontra o índice do utilizador no array users.value
+        // NOTA: users.value é um array (pois loadUsers atribui res.data.data)
+        const userIndex = users.value.findIndex(u => u.id === userId);
+        
+        if (userIndex !== -1) {
+            // Remove 1 elemento a partir da posição userIndex
+            users.value.splice(userIndex, 1);
+            
+            // Opcional: Atualizar o total da paginação
+            if (pagination.value.total) {
+                pagination.value.total--;
+            }
+        }
+        
+        alert(`Sucesso! Conta de ${nickname} desativada. ${response.data.message}`);
+        
+    } catch (error) {
+        console.error('Erro ao desativar utilizador:', error.response?.data || error.message);
+        const errorMessage = error.response?.data?.error || 'Falha na comunicação com o servidor. Tente novamente.';
+        alert(`Falha ao desativar: ${errorMessage}`);
+    }
+};
 
 // 4. Função de Alteração de Página
 const changePage = (page) => {

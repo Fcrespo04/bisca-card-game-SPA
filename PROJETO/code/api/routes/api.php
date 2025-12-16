@@ -8,6 +8,7 @@ use App\Http\Controllers\GameController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\HistoryController;
+use App\Http\Controllers\AdminController;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -52,6 +53,18 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/history', [HistoryController::class, 'index']);
     Route::get('/statistics/personal', [HistoryController::class, 'statisticsPersonal']);
     Route::get('/admin/stats/{user}', [HistoryController::class, 'statisticsPlayer']);
+
+    Route::prefix('admin')->controller(AdminController::class)->group(function () {
+        
+        // G5: Bloqueio/Desbloqueio (PATCH /api/admin/users/{user}/block)
+        Route::patch('/users/{user}/block', 'toggleBlock');
+        
+        // G5: Remoção (DELETE /api/admin/users/{user})
+        Route::delete('/users/{user}', 'removeAccount');    
+        
+        // G5: Criação de Admin (POST /api/admin/create-admin)
+        Route::post('/create-admin', 'createAdmin');        
+    });
     
 });
 
