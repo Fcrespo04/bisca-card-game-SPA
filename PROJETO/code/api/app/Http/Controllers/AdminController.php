@@ -15,6 +15,10 @@ class AdminController extends Controller
 
     public function getUsersListAdmin(Request $request)
     {
+
+        $user = $request->user();
+
+        if ($user->type === 'A') {
         // 1. Definição da Query Base e Colunas
         $query = User::select(
             'id',
@@ -73,6 +77,9 @@ class AdminController extends Controller
 
         // 4. Devolver o Objeto de Paginação Completo
         return response()->json($Users);
+    }
+
+        return response()->json(['message' => 'Acesso negado.'], 403);
     }
 
     public function toggleBlock(Request $request, User $user)
