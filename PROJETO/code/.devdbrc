@@ -2,5 +2,9 @@
   {
     "type": "sqlite",
     "path": "c:\\Escola\\DAD_projetos\\PROJETO\\bisca-card-game-SPA\\PROJETO\\code\\api\\database\\database.sqlite"
+  },
+  {
+    "type": "sqlite",
+    "path": "c:\\Users\\Bernardo\\Desktop\\DAD\\Projeto-dad-main\\bisca-card-game-SPA\\PROJETO\\code\\api\\database\\database.sqlite"
   }
 ]

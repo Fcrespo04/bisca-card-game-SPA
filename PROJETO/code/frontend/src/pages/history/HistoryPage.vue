@@ -4,16 +4,16 @@
     <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
       <div>
         <h1 class="text-3xl font-bold text-slate-800">
-          {{ isAdmin ? '🌍 Histórico Global' : '📜 O Meu Histórico' }}
+          {{ isAdmin ? '🌍 Global History' : '📜 My History' }}
         </h1>
         <p class="text-slate-500 text-sm">
-          {{ isAdmin ? 'Gestão e consulta de todos os jogos' : 'Clica numa linha para ver detalhes técnicos' }}
+          {{ isAdmin ? 'Management and consultation of all games' : 'Click on a row to see technical details' }}
         </p>
       </div>
 
       <div v-if="isAdmin" class="flex items-center gap-2 w-full md:w-auto">
         <div class="relative w-full md:w-64">
-          <input v-model="searchQuery" @keyup.enter="loadHistory(1)" type="text" placeholder="Pesquisar Jogador..."
+          <input v-model="searchQuery" @keyup.enter="loadHistory(1)" type="text" placeholder="Search Player..."
             class="pl-3 pr-10 py-2 border border-slate-300 rounded-md text-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500" />
           <button @click="loadHistory(1)"
             class="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-blue-600">
@@ -26,11 +26,11 @@
     <Card>
       <CardContent class="p-0">
         <div v-if="isLoading" class="p-12 text-center text-gray-500">
-          A carregar histórico...
+          Loading history...
         </div>
 
         <div v-else-if="matches.length === 0" class="p-12 text-center text-gray-500">
-          {{ searchQuery ? 'Nenhum resultado encontrado.' : 'Ainda não tens histórico de jogos multijogador.' }}
+          {{ searchQuery ? 'No results found.' : 'You have no multiplayer game history yet.' }}
         </div>
 
         <div v-else class="overflow-x-auto">
@@ -38,16 +38,16 @@
             <thead class="text-xs text-gray-700 uppercase bg-slate-50 border-b">
               <tr>
                 <th class="px-6 py-3 w-10"></th>
-                <th class="px-6 py-3">Data</th>
-                <th class="px-6 py-3">Tipo</th>
-                <th class="px-6 py-3">Jogadores</th>
-                <th class="px-6 py-3">Vencedor</th>
+                <th class="px-6 py-3">Date</th>
+                <th class="px-6 py-3">Type</th>
+                <th class="px-6 py-3">Players</th>
+                <th class="px-6 py-3">Winner</th>
 
                 <th class="px-6 py-3 text-center">
-                  {{ isAdmin ? 'Score (P1 / P2)' : 'Score (Marcas)' }}
+                  {{ isAdmin ? 'Score (P1 / P2)' : 'Score (Marks)' }}
                 </th>
 
-                <th class="px-6 py-3 text-right">Resultado</th>
+                <th class="px-6 py-3 text-right">Result</th>
               </tr>
             </thead>
             <tbody class="divide-y divide-slate-100">
@@ -70,7 +70,7 @@
 
                   <td class="px-6 py-4">
                     <span class="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded">
-                      Bisca de {{ match.type }}
+                      Bisca {{ match.type }}
                     </span>
                   </td>
 
@@ -89,14 +89,14 @@
                   </td>
 
                   <td class="px-6 py-4 font-bold text-slate-700">
-                    {{ match.winner?.nickname || 'Empate/N/A' }}
+                    {{ match.winner?.nickname || 'Draw/N/A' }}
                   </td>
 
                   <td class="px-6 py-4 text-center">
                     <div
                       class="inline-flex items-center gap-3 bg-slate-100 px-3 py-1 rounded-lg border border-slate-200">
 
-                      <div class="flex gap-1" :title="isAdmin ? 'Player 1' : 'Tu'">
+                      <div class="flex gap-1" :title="isAdmin ? 'Player 1' : 'You'">
                         <span v-for="n in (match.user_marks_won || 0)" :key="'u' + n" 
                         :class="['w-1 h-4 rounded-sm', isAdmin ? 'bg-gray-500' : 'bg-blue-600']">
                         </span>
@@ -105,7 +105,7 @@
 
                       <span class="text-slate-400">/</span>
 
-                      <div class="flex gap-1" :title="isAdmin ? 'Player 2' : 'Adversário'">
+                      <div class="flex gap-1" :title="isAdmin ? 'Player 2' : 'Opponent'">
                         <span v-for="n in (match.opponent_marks_won || 0)" :key="'o' + n" :class="['w-1 h-4 rounded-sm', 'bg-gray-500' ]"> 
                         </span>
                         <span v-if="!match.opponent_marks_won" class="text-gray-400 font-mono text-xs">0</span>
@@ -117,18 +117,18 @@
                     <template v-if="isAdmin">
                       <span
                         class="text-gray-700 font-bold bg-gray-200 px-3 py-1 rounded-full text-xs uppercase border border-gray-300">
-                        {{ match.status === 'Ended' ? 'Terminado' : match.status }}
+                        {{ match.status === 'Ended' ? 'Finished' : match.status }}
                       </span>
                     </template>
 
                     <template v-else>
                       <span v-if="match.result === 'WIN'"
                         class="text-green-700 font-bold bg-green-50 px-3 py-1 rounded-full text-xs uppercase border border-green-100">
-                        VITÓRIA
+                        WIN
                       </span>
                       <span v-else-if="match.result === 'LOSS'"
                         class="text-red-700 font-bold bg-red-50 px-3 py-1 rounded-full text-xs uppercase border border-red-100">
-                        DERROTA
+                        LOSS
                       </span>
                       <span v-else class="text-gray-600 bg-gray-100 px-3 py-1 rounded-full text-xs uppercase">
                         {{ match.status }}
@@ -142,20 +142,17 @@
                     <div class="grid grid-cols-1 md:grid-cols-4 gap-6 text-sm">
 
                       <div class="space-y-2 border-r border-slate-200 pr-4 max-h-40 overflow-y-auto">
-                        <h4 class="font-bold text-slate-700 uppercase text-xs mb-2">Pontuação por Jogo (Mão)</h4>
+                        <h4 class="font-bold text-slate-700 uppercase text-xs mb-2">Score per Game (Hand)</h4>
                         <ul v-if="match.games && match.games.length" class="text-xs space-y-2">
                           <li v-for="(game, index) in match.games" :key="game.id"
                             class="p-2 rounded flex justify-between items-center border border-slate-100 bg-white"
                             :class="{
-                              // Lógica de Fundo:
-                              // Se sou Admin, P1 = Verde, P2 = Vermelho.
-                              // Se sou User, Eu = Verde, Adv. = Vermelho.
                               'bg-green-50': (isAdmin && game.winner_user_id === match.player1?.id) || (!isAdmin && game.winner_user_id === authStore.currentUser?.id),
                               'bg-red-50': (isAdmin && game.winner_user_id === match.player2?.id) || (!isAdmin && game.winner_user_id && game.winner_user_id !== authStore.currentUser?.id),
                               'bg-gray-100': !game.winner_user_id
                             }">
 
-                            <span class="font-semibold text-slate-700">Jogo #{{ index + 1 }}</span>
+                            <span class="font-semibold text-slate-700">Game #{{ index + 1 }}</span>
 
                             <div class="flex items-center gap-2">
                               <span class="font-mono text-slate-800">
@@ -163,20 +160,19 @@
                               </span>
 
                               <span v-if="game.player1_points == 120 || game.player2_points == 120"
-                                class="ml-1 text-xl text-yellow-600" title="Bandeira">
+                                class="ml-1 text-xl text-yellow-600" title="Flag (Bandeira)">
                                 🚩
                               </span>
                               <span v-else-if="game.player1_points >= 91 || game.player2_points >= 91"
-                                class="ml-1 text-lg text-purple-600" title="Capote (2 Marcas)">
+                                class="ml-1 text-lg text-purple-600" title="Capote (2 Marks)">
                                 ♦️
                               </span>
                               <span v-else-if="game.player1_points >= 61 || game.player2_points >= 61"
-                                class="ml-1 text-lg text-blue-400 font-bold" title="Marca">
+                                class="ml-1 text-lg text-blue-400 font-bold" title="Mark">
                                 |
                               </span>
 
                               <span class="text-xs font-bold px-2 py-0.5 rounded" :class="{
-                                // Cor: Determinado pelo vencedor
                                 'text-green-700 bg-green-200': game.winner_user_id && ((isAdmin && game.winner_user_id === match.player1?.id) || (!isAdmin && game.winner_user_id === authStore.currentUser?.id)),
                                 'text-red-700 bg-red-200': game.winner_user_id && ((isAdmin && game.winner_user_id === match.player2?.id) || (!isAdmin && game.winner_user_id !== authStore.currentUser?.id)),
                                 'text-gray-500 bg-gray-300': !game.winner_user_id
@@ -184,17 +180,17 @@
 
                                 {{ isAdmin ? (game.winner_user_id === match.player1?.id ? 'P1' : (game.winner_user_id ?
                                   'P2' : '-')) :
-                                  (game.winner_user_id === authStore.currentUser?.id ? 'EU' : (game.winner_user_id ?
-                                    'ADV.' : '-')) }}
+                                  (game.winner_user_id === authStore.currentUser?.id ? 'YOU' : (game.winner_user_id ?
+                                    'OPP.' : '-')) }}
                               </span>
                             </div>
                           </li>
                         </ul>
-                        <p v-else class="text-gray-400 italic text-center py-4">Detalhes por Jogo indisponíveis.</p>
+                        <p v-else class="text-gray-400 italic text-center py-4">Per-game details unavailable.</p>
                       </div>
 
                       <div class="space-y-2 border-r border-slate-200 pr-4">
-                        <h4 class="font-bold text-slate-700 uppercase text-xs mb-2">Pontos Totais (Partida)</h4>
+                        <h4 class="font-bold text-slate-700 uppercase text-xs mb-2">Total Points (Match)</h4>
                         <ul class="text-xs space-y-2">
                           <li class="font-bold text-base">
                             <span
@@ -209,33 +205,33 @@
                             <span class="font-bold">{{ match.player2_points || 0 }} pts</span>
                           </li>
                           <li class="mt-3 text-sm font-semibold text-slate-700">
-                            Regras: Risca (1 Marca), Capote (2 Marcas), **Bandeira (3 Marcas)**
+                            Rules: 1 Mark (61 and 90 points), Capote (91 to 119 points), Flag (120 Points)
                           </li>
                         </ul>
                       </div>
 
                       <div class="space-y-2 border-r border-slate-200 pr-4">
-                        <h4 class="font-bold text-slate-700 uppercase text-xs mb-2">Duração e Tempos</h4>
+                        <h4 class="font-bold text-slate-700 uppercase text-xs mb-2">Duration and Times</h4>
                         <div class="text-xs text-gray-500">
-                          Início: <span class="font-medium text-slate-700 block">{{ match.began_at ? new
+                          Start: <span class="font-medium text-slate-700 block">{{ match.began_at ? new
                             Date(match.began_at).toLocaleString() : '-' }}</span>
                         </div>
                         <div class="text-xs text-gray-500">
-                          Fim: <span class="font-medium text-slate-700 block">{{ match.ended_at ? new
+                          End: <span class="font-medium text-slate-700 block">{{ match.ended_at ? new
                             Date(match.ended_at).toLocaleString() : '-' }}</span>
                         </div>
                         <div class="text-xs text-gray-500 mt-2">
-                          Tempo Total: <span class="font-mono bg-slate-200 px-2 py-1 rounded text-xs">{{
+                          Total Time: <span class="font-mono bg-slate-200 px-2 py-1 rounded text-xs">{{
                             formatDuration(match.total_time) }}</span>
                         </div>
                       </div>
 
                       <div class="space-y-2">
-                        <h4 class="font-bold text-slate-700 uppercase text-xs">Informação Técnica</h4>
+                        <h4 class="font-bold text-slate-700 uppercase text-xs">Technical Info</h4>
                         <ul class="space-y-1 text-xs text-gray-600">
-                          <li><span class="font-semibold">ID Partida:</span> #{{ match.id }}</li>
-                          <li><span class="font-semibold">Aposta (Stake):</span> {{ match.stake || 0 }} Moedas</li>
-                          <li><span class="font-semibold">Vencedor:</span> {{ match.winner?.nickname || 'N/A' }}</li>
+                          <li><span class="font-semibold">Match ID:</span> #{{ match.id }}</li>
+                          <li><span class="font-semibold">Stake:</span> {{ match.stake || 0 }} Coins</li>
+                          <li><span class="font-semibold">Winner:</span> {{ match.winner?.nickname || 'N/A' }}</li>
                         </ul>
                       </div>
                     </div>
@@ -251,13 +247,13 @@
 
     <div class="flex justify-center items-center gap-4 pt-4" v-if="pagination.total > pagination.per_page">
       <Button variant="outline" :disabled="!pagination.prev_page_url" @click="changePage(pagination.current_page - 1)">
-        &larr; Anterior
+        &larr; Previous
       </Button>
       <span class="text-sm font-medium text-slate-600">
-        Página {{ pagination.current_page }}
+        Page {{ pagination.current_page }}
       </span>
       <Button variant="outline" :disabled="!pagination.next_page_url" @click="changePage(pagination.current_page + 1)">
-        Seguinte &rarr;
+        Next &rarr;
       </Button>
     </div>
   </div>

@@ -38,8 +38,6 @@ Route::apiResource('games', GameController::class)->only(['index', 'show', 'stor
 
 
 Route::get('/leaderboard/global', [HistoryController::class, 'leaderboardGlobal']);
-Route::get('/users/list', [HistoryController::class, 'listAllUsers']);
-Route::get('/admin/users/list', [HistoryController::class, 'getUsersListAdmin']); // ADICIONADO
 
 
 /*
@@ -89,11 +87,16 @@ Route::middleware('auth:sanctum')->group(function () {
 
 
         Route::get('/history', [HistoryController::class, 'index']);
-    Route::get('/statistics/personal', [HistoryController::class, 'statisticsPersonal']);
-    Route::get('/admin/stats/{user}', [HistoryController::class, 'statisticsPlayer'])
+    Route::get('/statistics/personal', [HistoryController::class, 'statisticsPersonal'])
+
     ->withTrashed();
 
     Route::prefix('admin')->controller(AdminController::class)->group(function () {
+        
+        Route::get('/stats/{user}', [HistoryController::class, 'statisticsPlayer']);
+        Route::get('/users/list', [AdminController::class, 'getUsersListAdmin']); // ADICIONADO
+        Route::post('/users', [AdminController::class, 'storeUserByAdmin']);
+        Route::get('/transactions/stats', [AdminController::class, 'getDashboardStats']);
         
         // G5: Bloqueio/Desbloqueio (PATCH /api/admin/users/{user}/block)
         Route::patch('/users/{user}/block', 'toggleBlock');

@@ -17,6 +17,7 @@ import Statistics from '@/pages/Statistics/Statistics.vue'
 import HistoryPage from '@/pages/history/HistoryPage.vue'
 import LeaderboardPage from '@/pages/history/LeaderBoardPage.vue'
 import UsersList from '@/pages/history/UsersList.vue'
+import AdminStats from '@/pages/history/AdminStats.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -107,7 +108,13 @@ const router = createRouter({
       path: '/users',
       name: 'users',
       component: UsersList,
-      meta: { requiresAuth: true },
+      meta: { requiresAuth: true, requiresAdmin: true },
+    },
+        {
+      path: '/admin/transactions',
+      name: 'admin-stats',
+      component: AdminStats,
+      meta: { requiresAuth: true, requiresAdmin: true },
     },
   ],
 })

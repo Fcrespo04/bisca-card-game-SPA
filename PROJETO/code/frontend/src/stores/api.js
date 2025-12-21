@@ -151,18 +151,25 @@ export const useAPIStore = defineStore('api', () => {
     return axios.delete(`${API_BASE_URL}/admin/users/${userId}`);
   };
 
-  const createNewAdmin = (formData) => {
-    return axios.post(`${API_BASE_URL}/admin/create-admin`, formData);
+  const createUserAdmin = (formData) => {
+    return axios.post(`${API_BASE_URL}/admin/users`, formData);
   };
 
-  const getUsersListAdmin = (page = 1, filter = 'all') => { // ⬅️ Adicionar 'filter'
+  const getUsersListAdmin = (page = 1, filter = 'all', search = '') => { // ⬅️ Adicionar 'filter'
     return axios.get(`${API_BASE_URL}/admin/users/list`, {
         params: { 
             page: page, 
-            filter: filter // ⬅️ Envia o filtro
+            filter: filter, // ⬅️ Envia o filtro
+            search: search // ⬅️ Envia a pesquisa
         }
     });
 };
+
+const getAdminStats = (page = 1) => {
+    // Remove a primeira barra se o BASE_URL já a tiver
+    return axios.get(`${API_BASE_URL}/admin/transactions/stats?page=${page}`);
+};
+
   
 
   return {
@@ -189,7 +196,8 @@ export const useAPIStore = defineStore('api', () => {
     getPlayerStats,
     toggleUserBlock,
     removeUserAccount,
-    createNewAdmin,
-    getUsersListAdmin
+    createUserAdmin,
+    getUsersListAdmin,
+    getAdminStats,
   }
 })

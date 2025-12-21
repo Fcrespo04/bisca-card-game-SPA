@@ -90,6 +90,9 @@
               <NavigationMenuLink as-child v-if="authStore.isLoggedIn && authStore.currentUser?.type === 'A'">
                 <RouterLink to="/users">Users</RouterLink>
               </NavigationMenuLink>
+              <NavigationMenuLink as-child v-if="authStore.isLoggedIn && authStore.currentUser?.type === 'A'">
+                <RouterLink to="/admin/transactions">Admin Stats</RouterLink>
+              </NavigationMenuLink>
 
               <NavigationMenuLink as-child v-if="authStore.currentUser.type !== 'A'">
                 <RouterLink to="/my-cards">Card Collection</RouterLink>
